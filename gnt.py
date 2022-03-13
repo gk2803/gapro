@@ -1,6 +1,6 @@
 import random 
 
-POP_SIZE = 100
+POP_SIZE = 10
 #megistos arithmos bits simfwna me to pedio orismou 
 bits = 5
 #pedio orismou x,y,z
@@ -26,26 +26,60 @@ class Chromosome:
     def __init__(self):
         #lista triwn stoixeiwn [x,y,z]
         self.genes = []
-        self.fitness = 0
-        x = random.randint(bounds[0][0],bounds[0][1])
-        y = random.randint(bounds[1][0],bounds[1][1])
-        z = random.randint(bounds[2][0],bounds[2][1])
+        self.prob = 0
+        self.qprob = 0
+        self.x = random.randint(bounds[0][0],bounds[0][1])
+        self.y = random.randint(bounds[1][0],bounds[1][1])
+        self.z = random.randint(bounds[2][0],bounds[2][1])
         # προσθετει μηδενικα μπροστα απο καθε gene οπου ο αριθμος των δυαδικων με .zfill
         # του ψηφιων ειναι μικροτερος απο τον μεγιστο αριθμο bits εντος του πεδιου ορισμου (7) 
         
-        self.genes.append(list(bin(x)[2:].zfill(bits)))
-        self.genes.append(list(bin(y)[2:].zfill(bits)))
-        self.genes.append(list(bin(z)[2:].zfill(bits)))
+        self.genes.append(list(bin(self.x)[2:].zfill(bits)))
+        self.genes.append(list(bin(self.y)[2:].zfill(bits)))
+        self.genes.append(list(bin(self.z)[2:].zfill(bits)))
+        #fitness 
+        self.fitness = objective_function(self.get_real_genes())
+    
 
+    def get_real_genes(self):
+        return [self.x,self.y,self.z]
+    
+    
+    
+
+
+class Population:
+    def __init__(self):
+        
+        self.pop = []
+        self.sum = 0
+        self.q = 0
+        for _ in range(POP_SIZE):
+            s = Chromosome()
+            self.sum += s.fitness
+            self.pop.append(s)
+        #init probabilities, quantitive probabilities
+        for elem in self.pop:
+            elem.prob = elem.fitness/self.sum
+            self.q += elem.prob
+            elem.qprob += self.q
         
 
+        
     
-    def genes(self):
-        return self.genes
+    def __str__(self):
+        s = ""
+        for elem in self.pop:
+            s+=f'x: {elem.x}, y: {elem.y}, z: {elem.z} fitness: {elem.fitness} prob: {elem.prob} qprob: {elem.qprob}\n'
+        return s
+    
 
-    def decode(self):
-        pass 
 
-     
-s = Chromosome()
-print(s.genes)
+
+class Genetic_Algorithm:
+    def __init__(self):
+        pass
+        
+
+p = Population()
+print(p)

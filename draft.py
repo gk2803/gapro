@@ -16,11 +16,11 @@ def n_elements_sum(l,n):
 #κατασκευη πιθανων λυσεων 
 
 #Ν αριθμος πιθανων λυσεων
-N = 6
+N = 30
 bits = 5
 
 #προβλημα
-def foo(x):
+def objective_function(x):
     return x**2
 
 
@@ -28,13 +28,13 @@ def foo(x):
 a = []
 for i in range(N):
      a.append(random.randint(1,31))
-
+     
 
 #αξιολογηση (υπολογισμός τιμών μέσω της συνάρτησης) (fitness)
 #ο πινακας t περιεχει τις "λυσεις" των αρχικοποιημενων τυχαίων αριθμων
 t=[]
 for i in range(N):
-    t.append(foo(a[i]))
+    t.append(objective_function(a[i]))
 
 # τα στοιχεία του πίνακα f αποτελούν την πιθανότητα επιλογής των στοιχείων του πίνακα t
 # η πιθανότητα κάθε χρωμοσώματος υπολογίζεται διαιρώντας την αξιολόγηση (fitness) με τον συνολικό
@@ -58,21 +58,27 @@ q=[]
 for i in range(N):
     q.append(n_elements_sum(f,i))
 
+
+#list of tuples (value,fitness,prob,qi)
+pop =[]
+for i in range(N):
+    pop.append((a[i],t[i],f[i],q[i]))
+    print(pop[i])
 #επιλογη ρουλετας - διασταύρωση
-select = [0 for _ in range(N)]
+
+
 
 for i in range(N):
     r = random.random()
     for j in range(N):
+        
         if (r<=q[j]):
-            select[j]+=1
+            #κωδικας διασταύρωσης
             break
 
 
 
-last_list=[]
-for i in range(N):
-    last_list.append((a[i],f[i],select[i]))
+
     
 #διασταυρωση μονου σημειου (one point crossover)
 #συναρτηση που θα χρησιμοποιηθει ΚΑΤΑ τη διαδικασια της επιλογης
@@ -85,21 +91,13 @@ def crossover(parent1, parent2):
     r = random.random()
     for i in range(bits-1):
         if (r<=i/(bits-1)):
-            position = i
+            index = i
             break
-    child1 = parent1[:position]+parent2[position:]
-    child2 = parent2[:position]+parent1[position:]
-    print("το σημείο τομής είναι",position)
+    child1 = parent1[:index]+parent2[index:]
+    child2 = parent2[:index]+parent1[index:]
+    print("το σημείο τομής είναι",index)
     return child1,child2
     
 
 print(crossover("01234","99912"))
     
-
-
-
-
-#last_list.sort(key=lambda y: y[2])
-
-for i in range(N):
-    print(f"chromosome: {last_list[i][0]}, probability: {last_list[i][1]:.2f}, roulette-selection: {last_list[i][2]}")
