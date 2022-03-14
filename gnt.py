@@ -60,8 +60,7 @@ class Chromosome:
     def get_genes(self):
         return self.genes
 
-    def set_genes(self,t):
-        self.genes = t
+    
 
 
 class Population:
