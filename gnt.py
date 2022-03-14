@@ -24,23 +24,22 @@ def objective_function(t):
 
 
 class Chromosome:
-    def __init__(self):
-        #lista triwn stoixeiwn [x,y,z]
-        self.genes = []
-        self.prob = 0
-        self.qprob = 0
+    #genes = list of 3 binaries representing integers x,y,z
+    def __init__(self, genes,prob=0,qprob=0):
+        self.genes = genes
+        self.prob = prob
+        self.qprob = qprob
+    
+    @classmethod
+    def rand(cls):
         x = random.randint(bounds[0][0],bounds[0][1])
         y = random.randint(bounds[1][0],bounds[1][1])
         z = random.randint(bounds[2][0],bounds[2][1])
-        # προσθετει μηδενικα μπροστα απο καθε gene οπου ο αριθμος των δυαδικων με .zfill
-        # του ψηφιων ειναι μικροτερος απο τον μεγιστο αριθμο bits εντος του πεδιου ορισμου (7) 
-        
-        self.genes.append(list(bin(x)[2:].zfill(bits)))
-        self.genes.append(list(bin(y)[2:].zfill(bits)))
-        self.genes.append(list(bin(z)[2:].zfill(bits)))
-        #fitness 
-        self.fitness = objective_function(self.get_int())
- 
+        t = []
+        t.append(list(bin(x)[2:].zfill(bits)))
+        t.append(list(bin(y)[2:].zfill(bits)))
+        t.append(list(bin(z)[2:].zfill(bits)))
+        return cls(t)
 
     def get_int(self):
         t = list()
