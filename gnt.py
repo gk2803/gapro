@@ -63,6 +63,40 @@ class Chromosome:
     def set_genes(self,t):
         self.genes = t
 
+
+class Population:
+    def __init__(self,pop=[]):
+        #pop is a list of Chromosomes
+        self.pop = pop
+        self.fitness_sum = 0
+        self.qprob = 0
+        if self.pop:
+            for chromosome in pop:
+                self.fitness_sum += chromosome.fitness
+            for chromosome in pop:
+                chromosome.prob = chromosome.fitness/self.fitness_sum
+                self.qprob += chromosome.prob
+                chromosome.qprob += self.qprob
+
+
+    
+    @classmethod
+    def rand(cls,size):
+        t = []
+        for _ in range(size):
+            s = Chromosome.rand()
+            t.append(s)
+        return cls(t)
+        
+
+        
+    
+    def __str__(self):
+        s = ""
+        for elem in self.pop:
+            s+=f'{elem.get_int()} fitness: {elem.fitness} prob: {elem.prob} qprob: {elem.qprob}\n'
+        return s
+    
 c = Chromosome.rand()
-c = Chromosome([['1','0','0','1','0'],['1','0','0','1','0'],['1','0','0','1','0']])
-print(c.fitness)
+p = Population.rand(POP_SIZE)
+print(p)
