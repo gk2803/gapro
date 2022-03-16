@@ -2,18 +2,19 @@
 import random 
 
 POP_SIZE = 10
-#megistos arithmos bits simfwna me to pedio orismou 
+#megistos arithmos bits simfwna me to pedio orismou
+#
 bits = 5
 #pedio orismou x,y,z
 bounds =[[0,10],[0,20],[0,30]]
-# Pc = 
 Pm = 0.3
-# k = 
+
 
 #random.seed(5)
 def decode(bin):
     pass
 
+# υπολογισμος fitness (καταλληλοτητας)
 def objective_function(t):
     x = t[0]
     y = t[1]
@@ -23,6 +24,8 @@ def objective_function(t):
     return Objective_max
 
 
+#TODO #1 τα χρωμοσωματα να δεχονται σαν παραμετρους binaries τα οποια θα μετατρεπονται
+# σε πραγματικους αριθμους συμφωνα με το πεδιο ορισμου
 class Chromosome:
     #genes = list of 3 binaries representing integers x,y,z
 
@@ -31,7 +34,8 @@ class Chromosome:
         self.prob = prob
         self.qprob = qprob
         self.fitness = objective_function(self.get_int())
-
+    
+    #εναλλακτικος constructor για αρχικοποιηση τυχαιου χρωμοσοματος
     @classmethod
     def rand(cls):
         x = random.randint(bounds[0][0],bounds[0][1])
@@ -60,23 +64,25 @@ class Chromosome:
     def get_genes(self):
         return self.genes
 
+# ο πληθυσμος μπορει να αρχικοποιηθει ειτε εισαγοντας μια λιστα απο αντικειμενα Chromosomes
+# ειτε τυχαια με τον εναλλακτικο constructor Population.rand()
 
 class Population:
     def __init__(self,pop=[]):
-        #pop is a list of Chromosomes
+        # pop = λίστα χρωμοσομάτων
         self.pop = pop
+        # αθροιζει ολες τις καταλληλοτητες των χρωμοσοματων της λιστας
         self.fitness_sum = 0
+        # αθροιζει τις πιθανοτητες του καθε χρωμοσωματος
         self.qprob = 0
         if  self.pop:
             for chromosome in self.pop:
-                #μηδενιζω τις αθροιστικες πιθανοτητες
-                
                 self.fitness_sum += chromosome.fitness
             for chromosome in self.pop:
                 chromosome.prob = chromosome.fitness/self.fitness_sum
                 self.qprob += chromosome.prob
                 chromosome.qprob += self.qprob
-  
+    # αρχικοποιει μια λιστα με τυχαια χρωμοσωματα με μοναδικη εισοδο το μεγεοθος της λιστας
     @classmethod
     def rand(cls,size):
         t = []
@@ -90,8 +96,11 @@ class Population:
         for elem in self.pop:
             s+=f'{elem.get_int()} fitness: {elem.fitness} prob: {elem.prob} qprob: {elem.qprob}\n'
         return s
-    
+
+# Κλαση που περιεχει τους βασικους τελεστες του γενετικου αλγοριθμου
 class GeneticAlgorithm:
+    # τελεστης επιλογης. Επιστρεφει ενα αντικειμενο Population με στοιχεια του τα Chromosomes που εχουν επιλεχτει
+    # Ο τροπος επιλογης βασιζεται στη μεθοδο εξαναγκασμενης ρουλεττας
     @staticmethod
     def selection(pop:Population):
         p = pop.pop
@@ -103,7 +112,9 @@ class GeneticAlgorithm:
                     t.append(chromosome)
                     break
         return Population(t)
-    
+    # τελεστης διασταυρωσης. Δεχετε ως εισοδο ενα αντικειμενο Population, ενεργει πανω του τη διαδικασια της διασταυρωσης και 
+    # επιστρεφει ενα καινουριο αντικειμενο Population.
+    # Η διαδικασια της διασταυρωσης βασιζεται στην επιλογη μονου σημειου
     @staticmethod
     def crossover(pop:Population):
         p = pop.pop
@@ -126,6 +137,14 @@ class GeneticAlgorithm:
             children.append(child2)
         return Population(children)
 
+    # Τελεστης μεταλλαξης. Δεχετε ως εισοδο ενα αντικειμενo Population και μια σταθερα mutation_rate 
+    # που εισαγεται απο το χρηστη. 
+    # Η διαδικασια της μεταλλαξης γινεται "γυρνωντας" ενα bit της συμβολοσειρας .Εφοσον η συμβολοσειρα
+    # επιλεγει για διασταυρωση τότε αλλάζει ΕΝΑ TYXAIO  bit απο ολη τη συμβολοσειρα. 
+    # Θα μπορουσε να υλοποιηθει και πιο επιθετικα ως εξης
+    # TODO #2 δευτερος τροπος μεταλλαξης
+    # Για καθε bit της συμβολοσειρας, επιλεγω ενα τυχαιο αριθμο και αν ειναι μικροτερος η ισος με το mutation_rate τότε το γυρνάω.
+    # διαφορετικά παραμένει το ίδιο.
     @staticmethod
     def mutation(pop:Population, mutation_rate:float):
         pop = pop.pop.copy()
