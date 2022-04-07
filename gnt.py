@@ -4,15 +4,20 @@ import random
 POP_SIZE = 10
 #megistos arithmos bits simfwna me to pedio orismou
 #
-bits = 5
+bits = 30
 #pedio orismou x,y,z
 bounds =[[0,10],[0,20],[0,30]]
 Pm = 0.3
 
 
-#random.seed(5)
-def decode(bin):
-    pass
+
+def decode( bounds, bits, genes):
+        real_chromosome=[]
+        for i in range(len(bounds)):
+            integer = int(''.join(char for char in genes[i]),2)
+            real_value = bounds[i][0] + (integer/(2**bits)) * (bounds[i][1] - bounds[i][0])
+            real_chromosome.append(real_value) 
+        return real_chromosome
 
 # υπολογισμος fitness (καταλληλοτητας)
 def objective_function(t):
@@ -24,38 +29,35 @@ def objective_function(t):
     return Objective_max
 
 
-#TODO #1 τα χρωμοσωματα να δεχονται σαν παραμετρους binaries τα οποια θα μετατρεπονται
-# σε πραγματικους αριθμους συμφωνα με το πεδιο ορισμου
+
 class Chromosome:
-    #genes = list of 3 binaries representing integers x,y,z
+    #genes = list of 3 binaries representing real numbers x,y,z
 
     def __init__(self, genes:list,prob=0,qprob=0):
         self.genes = genes
         self.prob = prob
         self.qprob = qprob
-        self.fitness = objective_function(self.get_int())
+        self.real_genes = decode(bounds, bits, self.genes)
+        self.fitness = objective_function(self.real_genes)
     
     #εναλλακτικος constructor για αρχικοποιηση τυχαιου χρωμοσοματος
     @classmethod
     def rand(cls):
-        x = random.randint(bounds[0][0],bounds[0][1])
-        y = random.randint(bounds[1][0],bounds[1][1])
-        z = random.randint(bounds[2][0],bounds[2][1])
-        t = []
-        t.append(list(bin(x)[2:].zfill(bits)))
-        t.append(list(bin(y)[2:].zfill(bits)))
-        t.append(list(bin(z)[2:].zfill(bits)))
-        return cls(t)
+        chrome=[]
+        for _ in range(len(bounds)):
+            var=[]
+            for _ in range(bits):
+                if random.random()>=0.5:
+                    var.append("0")
+                else:
+                    var.append("1")
+            chrome.append(var)
+        return cls(chrome)
 
-    def get_int(self):
-        t = list()
-        for gene in self.genes:
-            t.append(int(''.join(gene),2))
-        return t
-   
+
     def __str__(self):
         s = "" 
-        t = self.get_int()
+        t = self.real_genes
         for gene in self.genes:
             s += f"[{''.join(gene)}]"
         s+= f" x={t[0]}, y={t[1]}, z={t[2]}"
@@ -94,7 +96,7 @@ class Population:
     def __str__(self):
         s = ""
         for elem in self.pop:
-            s+=f'{elem.get_int()} fitness: {elem.fitness} prob: {elem.prob} qprob: {elem.qprob}\n'
+            s+=f'{elem.real_genes} fitness: {elem.fitness} prob: {elem.prob} qprob: {elem.qprob}\n'
         return s
 
 # Κλαση που περιεχει τους βασικους τελεστες του γενετικου αλγοριθμου
@@ -164,15 +166,15 @@ class GeneticAlgorithm:
                 offsprings.append(Chromosome(z))
         return Population(offsprings)
                     
-pop = Population.rand(1000)
-genetic_algorithm = GeneticAlgorithm()
+pop = Population.rand(100)
+run = GeneticAlgorithm()
+
+for i in range(300):
+    pop=run.selection(pop)
+    pop=run.crossover(pop)
+    pop=run.mutation(pop,Pm)
+
+print(pop)
 
 
-pop = genetic_algorithm.selection(pop)
-pop = genetic_algorithm.crossover(pop)
-pop = genetic_algorithm.mutation(pop, Pm)
-    
-print(len(pop.pop))
 
-for k in pop.pop:
-    print(k)
