@@ -1,110 +1,29 @@
-import random
-from re import A
-
-random.seed(10)
-
-
-
-
-# ----------------------------------------------------------------------
-# ----------------------------------------------------------------------
-# ----------------------------ΠΡΟΣΧΕΔΙΟ --------------------------------
-# --------------------ΔΕΝ ΧΡΕΙΑΖΕΤΑΙ ΠΟΥΘΕΝΑ----------------------------
-#TODO recursive
-def n_elements_sum(l,n):
-    sum = 0
-    if (n==0):
-        return l[0]
-    for i in range(n+1):
-        sum += l[i]
-            
-    return sum
-
-#κατασκευη πιθανων λυσεων 
-
-#Ν αριθμος πιθανων λυσεων
-N = 30
-bits = 5
-
-#προβλημα
-def objective_function(x):
-    return x**2
+import random 
+from numpy.random import rand, randint
+import numpy as np 
+bits = 20
+bounds = [[0,10],[0,20],[0,30]]
+pop_size = 50
 
 
-#αρχικοποίηση λίστας με τυχαίους αριθμούς
-a = []
-for i in range(N):
-     a.append(random.randint(1,31))
-     
-
-#αξιολογηση (υπολογισμός τιμών μέσω της συνάρτησης) (fitness)
-#ο πινακας t περιεχει τις "λυσεις" των αρχικοποιημενων τυχαίων αριθμων
-t=[]
-for i in range(N):
-    t.append(objective_function(a[i]))
-
-# τα στοιχεία του πίνακα f αποτελούν την πιθανότητα επιλογής των στοιχείων του πίνακα t
-# η πιθανότητα κάθε χρωμοσώματος υπολογίζεται διαιρώντας την αξιολόγηση (fitness) με τον συνολικό
-# αριθμό αξιολογήσεων s = sum(t)
-f=[]
-s= sum(t)
-for i  in range(N):
-    f.append(t[i]/s)
-
-# average = s/N τα average και max δεν χρειάζονται αλλά αποτελούν ένα ένδιαφέρον στατιστικό
-# max = max(t)
-
-# βήμα αθροιστικής πιθανότητας όπου θα μας βοηθήσει
-# στην αναπαράσταση των πιθανοτήτων σε μια ρουλέτα
-# υπολογισμος αθροιστικης πιθανότητα: 
-# q[0] = f[0]
-# q[1] = f[0] + f[1]
-# q[2] = f[0] + f[1] + f[2] κ.ο.κ
-# όπου f[i] η πιθανότητα του χρωμοσώματος i
-q=[]
-for i in range(N):
-    q.append(n_elements_sum(f,i))
+def decoding(bounds, bits, chromosome):
+    real_chromosome = list() 
+    for i in range(len(bounds)):
+        st, en = i * bits, (i*bits) + bits # extract chromosmo
+        sub = chromosome[st:en] 
+        chars = ''.join([str(s) for s in sub]) #convert to chart
+        integer = int(chars,2)
+        real_value = bounds[i][0] + (integer/(2**bits)) * (bounds[i][1] - bounds[i][0])
+        real_chromosome.append(real_value) 
+    return real_chromosome
 
 
-#list of tuples (value,fitness,prob,qi)
-pop =[]
-for i in range(N):
-    pop.append((a[i],t[i],f[i],q[i]))
-    print(pop[i])
-#επιλογη ρουλετας - διασταύρωση
+pop = [randint(0,2,bits*len(bounds)).tolist() for _ in range(pop_size)]
+#print(pop[1])
+print(decoding(bounds,bits,pop[1]))
 
+#print(bits*len(bounds))
+#print(pop[0])
 
-
-for i in range(N):
-    r = random.random()
-    for j in range(N):
-        
-        if (r<=q[j]):
-            #κωδικας διασταύρωσης
-            break
-
-
-
-
-    
-#διασταυρωση μονου σημειου (one point crossover)
-#συναρτηση που θα χρησιμοποιηθει ΚΑΤΑ τη διαδικασια της επιλογης
-def crossover(parent1, parent2):
-    
-    # ρουλέτα για επιλογή σημείου bits -1 καθως τα σημεια στα οποια 
-    # μπορει να χωριστει το binary ειναι bits-1 
-    # σσ. bits = ο αριθμος των ψηφιων της δυαδικης συμβολοσειρας π.χ. ο αριθμος 31 σε binary ειναι 11111
-    
-    r = random.random()
-    for i in range(bits-1):
-        if (r<=i/(bits-1)):
-            index = i
-            break
-    child1 = parent1[:index]+parent2[index:]
-    child2 = parent2[:index]+parent1[index:]
-    print("το σημείο τομής είναι",index)
-    return child1,child2
-    
-
-print(crossover("01234","99912"))
-    
+chromosome = randint(0,2,bits*len(bounds)).tolist()
+print(chromosome)
