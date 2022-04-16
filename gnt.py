@@ -187,7 +187,7 @@ for i in range(10):
     ga.misc()
     ga.selection()
     ga.crossover()
-    ga.mutation(0.2)
+    ga.mutation(0.3)
 
 
 print(ga)
