@@ -3,11 +3,9 @@ import random
 
 POP_SIZE = 10
 random.seed(4)
-bits = 20
-bounds =[[0,10],[0,20],[0,30]]
+BITS = 20
+BOUNDS =[[0,10],[0,20],[0,30]]
 Pm = 0.7
-
-
 
 def decode( bounds, bits, genes):
         real_chromosome=[]
@@ -30,24 +28,24 @@ def objective_function(t):
 
 class Chromosome:
 
-    def __init__(self, genes:list,prob=0,qprob=0):
+    def __init__(self, genes:list,bits=BITS,bounds=BOUNDS,prob=0,qprob=0):
         self.genes = genes
         self.prob = prob
         self.qprob = qprob
+        self.bits = bits
+        self.bounds=bounds
         self.real_genes = decode(bounds, bits, self.genes)
         self.fitness = objective_function(self.real_genes)
-        self.selected = 0
+        
     
     @classmethod
-    def rand(cls):
+    def rand(cls,bits=BITS):
         chrome=[]
         for _ in range(len(bounds)):
             var=[]
             for _ in range(bits):
-                if random.random()>=0.5:
-                    var.append("0")
-                else:
-                    var.append("1")
+                var.append("0") if random.random()>=0.5 else var.append("1")
+                
             chrome.append(var)
         return cls(chrome)
 
@@ -59,20 +57,14 @@ class Chromosome:
 
     def __str__(self):
         s = "" 
-        t = self.real_genes
-        
-            
+        t = self.real_genes     
+
         s+= f" x={t[0]}, y={t[1]}, z={t[2]}, prob={self.qprob}, fitness={self.fitness}"
         return s
-        
-    def get_genes(self):
-        return self.genes
-
-
-
 
 class GeneticAlgorithm:
-    def __init__(self,size=100):
+    def __init__(self,size=POP_SIZE,bits=BITS):
+        self.bits=bits
         self.size=size
         self.population = []
         self.flag = False #if true pop has negative values
@@ -107,42 +99,30 @@ class GeneticAlgorithm:
         self.fitness_average = self.fitness_sum/len(pop)
             
 
-    def selection(self):
-        
+    def selection(self):       
         t=[]
-        for _ in range(self.size):
-            
+        for _ in range(self.size):          
             r = random.random()
             for chromosome in self.population:
-                
-                x=chromosome.qprob
-                if r <= chromosome.qprob:
-                    
-                    chromosome.selected+=1       
+                if r <= chromosome.qprob:   
                     t.append(chromosome)
                     break
         self.population =t
-        
-        
-    
-    
+  
     def crossover(self,crossover_rate):
         pop = self.population
         children = list()
         for i in range(int(len(pop)/2)):
-            parent1 = pop[2*i-1].get_genes()
-            parent2 = pop[2*i].get_genes()
+            parent1 = pop[2*i-1].genes
+            parent2 = pop[2*i].genes
             if random.random()<crossover_rate:
                 r = random.random()
-                for i in range(1,bits):  
-                    if r<i/(bits-1):
-                        
-                        index = i
-                        
+                for i in range(1,self.bits):  
+                    if r<i/(self.bits-1):      
+                        index = i 
                         break
                 child1 = [parent1[0][:index] +parent2[0][index:], parent1[1][:index] +parent2[1][index:],parent1[2][:index] +parent2[2][index:] ]
-                child2 = [parent2[0][:index] +parent1[0][index:], parent2[1][:index] +parent1[1][index:],parent2[2][:index] +parent1[2][index:] ]
-                
+                child2 = [parent2[0][:index] +parent1[0][index:], parent2[1][:index] +parent1[1][index:],parent2[2][:index] +parent1[2][index:] ]               
                 children.append(Chromosome(child1))
                 children.append(Chromosome(child2))
             else:
@@ -155,30 +135,22 @@ class GeneticAlgorithm:
         pop = self.population
         offsprings = []
         for chromosome in pop:
-            z = chromosome.get_genes()
+            z = chromosome.genes
             if random.random() <= mutation_rate:
-                #i = random.randint(0,2)
                 dummy = []
                 for i in range(3):
-                    j = random.randint(0,bits-1)
-                    
-                    #print("prin")
-                    #print(c)
+                    j = random.randint(0,self.bits-1)
                     if z[i][j] == '1':#flip
                         z[i][j] = '0' 
                     else:
                         z[i][j] ='1'
                     dummy.append(z[i])
                 offsprings.append(Chromosome(dummy))
-                    #print('meta')
-                    #print(c)
             else:
-                offsprings.append(Chromosome(z))
-                
+                offsprings.append(Chromosome(z))                
         self.population = offsprings
 
-    def __str__(self):
-        
+    def __str__(self):       
         s=""
         for chrome in self.population:
             
@@ -191,11 +163,8 @@ class GeneticAlgorithm:
             if chromosome.fitness>best_chrom.fitness:
                 best_chrom = chromosome
         return best_chrom
-        
-                    
 
 ga = GeneticAlgorithm(50)
-
 
 avg = -30000
 sum=0
@@ -216,6 +185,7 @@ for i in range(1000):
     
     if i%10==0:
         print(f"generagion: {i} best: {ga.best()}, average fit:{ga.fitness_average}")
+print(ga)
        
         
   
