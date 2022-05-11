@@ -1,8 +1,12 @@
+import tkinter as tk
+import random
+import time
+import matplotlib.pyplot as plt
 
-import random 
+from matplotlib.backends.backend_tkagg import (
+    FigureCanvasTkAgg, NavigationToolbar2Tk)
 
 POP_SIZE = 10
-random.seed(4)
 BITS = 20
 BOUNDS =[[0,10],[0,20],[0,30]]
 Pm = 0.7
@@ -28,22 +32,21 @@ def objective_function(t):
 
 class Chromosome:
 
-    def __init__(self, genes:list,bits=BITS,bounds=BOUNDS,prob=0,qprob=0):
+    def __init__(self, genes:list,prob=0,qprob=0):
         self.genes = genes
         self.prob = prob
         self.qprob = qprob
-        self.bits = bits
-        self.bounds=bounds
-        self.real_genes = decode(bounds, bits, self.genes)
+ 
+        self.real_genes = decode(BOUNDS, BITS, self.genes)
         self.fitness = objective_function(self.real_genes)
         
     
     @classmethod
-    def rand(cls,bits=BITS):
+    def rand(cls):
         chrome=[]
-        for _ in range(len(bounds)):
+        for _ in range(len(BOUNDS)):
             var=[]
-            for _ in range(bits):
+            for _ in range(BITS):
                 var.append("0") if random.random()>=0.5 else var.append("1")
                 
             chrome.append(var)
@@ -63,8 +66,7 @@ class Chromosome:
         return s
 
 class GeneticAlgorithm:
-    def __init__(self,size=POP_SIZE,bits=BITS):
-        self.bits=bits
+    def __init__(self,size=POP_SIZE):
         self.size=size
         self.population = []
         self.flag = False #if true pop has negative values
@@ -108,27 +110,25 @@ class GeneticAlgorithm:
                     t.append(chromosome)
                     break
         self.population =t
-  
+#TODO #6 multiple crossover points
     def crossover(self,crossover_rate):
         pop = self.population
-        children = list()
+        newpop = list()
         for i in range(int(len(pop)/2)):
             parent1 = pop[2*i-1].genes
             parent2 = pop[2*i].genes
             if random.random()<crossover_rate:
-                r = random.random()
-                for i in range(1,self.bits):  
-                    if r<i/(self.bits-1):      
-                        index = i 
-                        break
-                child1 = [parent1[0][:index] +parent2[0][index:], parent1[1][:index] +parent2[1][index:],parent1[2][:index] +parent2[2][index:] ]
-                child2 = [parent2[0][:index] +parent1[0][index:], parent2[1][:index] +parent1[1][index:],parent2[2][:index] +parent1[2][index:] ]               
-                children.append(Chromosome(child1))
-                children.append(Chromosome(child2))
+                index = random.randint(1,BITS-1)
+            
+                child1 = [parent1[i][:index] + parent2[i][index:] for i in range(len(parent1))]
+                child2 =[parent2[i][:index] + parent1[i][index:] for i in range(len(parent1))]
+                newpop.append(Chromosome(child1))
+                newpop.append(Chromosome(child2))        
+                
             else:
-                children.append(pop[2*i-1])
-                children.append(pop[2*i])
-        self.population = children
+                newpop.append(pop[2*i-1])
+                newpop.append(pop[2*i])
+        self.population = newpop
         
 
     def mutation(self, mutation_rate:float):
@@ -139,7 +139,7 @@ class GeneticAlgorithm:
             if random.random() <= mutation_rate:
                 dummy = []
                 for i in range(3):
-                    j = random.randint(0,self.bits-1)
+                    j = random.randint(0,BITS-1)
                     if z[i][j] == '1':#flip
                         z[i][j] = '0' 
                     else:
@@ -164,28 +164,18 @@ class GeneticAlgorithm:
                 best_chrom = chromosome
         return best_chrom
 
-ga = GeneticAlgorithm(50)
 
-avg = -30000
-sum=0
-it_percent =0.3
-iterations = 10000
+start = time.time()
+ga = GeneticAlgorithm(100)
 
+fitness = 0
 for i in range(1000):
     ga.misc()
     ga.selection()
     ga.crossover(1)
-    ga.mutation(0.05)
-    #if(ga.fitness_average>=avg):
-    #    avg = ga.fitness_average
-    #    print(f"generagion: {i} best: {ga.best()}, average fit:{avg}")
-    #    best=ga
-    #    sum=0
-    #if sum>=0.1*iterations:
-    
-    if i%10==0:
-        print(f"generagion: {i} best: {ga.best()}, average fit:{ga.fitness_average}")
-print(ga)
-       
-        
-  
+    ga.mutation(0.01)
+    if fitness < ga.best().fitness:
+        fitness = ga.best().fitness
+print(fitness)
+end = time.time()
+print(end-start)
