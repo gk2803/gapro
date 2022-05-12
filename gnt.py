@@ -7,7 +7,7 @@ from matplotlib.backends.backend_tkagg import (
     FigureCanvasTkAgg, NavigationToolbar2Tk)
 
 POP_SIZE = 10
-BITS = 10
+BITS = 20
 BOUNDS =[[0,10],[0,20],[0,30]]
 Pm = 0.7
 
@@ -198,7 +198,7 @@ for i in range(1000):
     ga.misc()
     ga.selection()
     ga.crossover(1,1)
-    ga.mutation(0.5)
+    ga.mutation(0.05)
     if fitness < ga.best().fitness:
         fitness = ga.best().fitness
 print(fitness)
