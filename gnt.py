@@ -7,7 +7,7 @@ from matplotlib.backends.backend_tkagg import (
     FigureCanvasTkAgg, NavigationToolbar2Tk)
 
 POP_SIZE = 10
-BITS = 20
+BITS = 10
 BOUNDS =[[0,10],[0,20],[0,30]]
 Pm = 0.7
 
@@ -28,6 +28,34 @@ def objective_function(t):
     
     return Objective_max
 
+def multiple_crossover( parent1,parent2,cp):
+    if cp==1:
+        index = random.randint(1,BITS-1)
+        child1 = [parent1[i][:index] + parent2[i][index:] for i in range(len(parent1))]
+        child2 =[parent2[i][:index] + parent1[i][index:] for i in range(len(parent1))]
+        return Chromosome(child1),Chromosome(child2)
+    
+    cp = random.sample(range(1,BITS),cp)
+    cp.sort()
+
+    child1=[[None]*BITS for _ in range(len(parent1))]
+    child2=[[None]*BITS for _ in range(len(parent1))]
+    for j in range(len(parent1)):
+        sum = 0
+        flag = False
+        for i in range(BITS):
+
+            if sum<len(cp) and i==cp[sum]:
+                flag = not flag
+                sum+=1
+
+            if flag == True:
+                child1[j][i]=parent1[j][i]
+                child2[j][i]=parent2[j][i]
+            else:
+                child1[j][i]=parent2[j][i]
+                child2[j][i]=parent1[j][i]
+    return Chromosome(child1),Chromosome(child2)
 
 
 class Chromosome:
@@ -111,19 +139,16 @@ class GeneticAlgorithm:
                     break
         self.population =t
 #TODO #6 multiple crossover points
-    def crossover(self,crossover_rate):
+    def crossover(self,crossover_rate,cp):
         pop = self.population
         newpop = list()
         for i in range(int(len(pop)/2)):
             parent1 = pop[2*i-1].genes
             parent2 = pop[2*i].genes
-            if random.random()<crossover_rate:
-                index = random.randint(1,BITS-1)
-            
-                child1 = [parent1[i][:index] + parent2[i][index:] for i in range(len(parent1))]
-                child2 =[parent2[i][:index] + parent1[i][index:] for i in range(len(parent1))]
-                newpop.append(Chromosome(child1))
-                newpop.append(Chromosome(child2))        
+            if random.random()<=crossover_rate:
+                child1,child2 =multiple_crossover(parent1,parent2,cp)
+                newpop.append(child1)
+                newpop.append(child2)      
                 
             else:
                 newpop.append(pop[2*i-1])
@@ -167,15 +192,23 @@ class GeneticAlgorithm:
 
 start = time.time()
 ga = GeneticAlgorithm(100)
-
+#random.seed(2)
 fitness = 0
 for i in range(1000):
     ga.misc()
     ga.selection()
-    ga.crossover(1)
-    ga.mutation(0.01)
+    ga.crossover(1,1)
+    ga.mutation(0.5)
     if fitness < ga.best().fitness:
         fitness = ga.best().fitness
 print(fitness)
 end = time.time()
 print(end-start)
+
+
+#ga.misc()
+#
+#ga.selection()
+#print(ga)
+#ga.crossover(1,2)
+#print(ga)
