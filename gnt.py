@@ -173,7 +173,7 @@ for i in range(1000):
     ga.misc()
     ga.selection()
     ga.crossover(1)
-    ga.mutation(0.01)
+    ga.mutation(0.05)
     if fitness < ga.best().fitness:
         fitness = ga.best().fitness
 print(fitness)
