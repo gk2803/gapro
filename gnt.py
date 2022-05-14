@@ -2,14 +2,14 @@ import tkinter as tk
 import random
 import time
 import matplotlib.pyplot as plt
-
+import sys
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+
 
 POP_SIZE = 10
 BITS = 20
 BOUNDS = [[0, 10], [0, 20], [0, 30]]
 Pm = 0.7
-
 
 def decode(bounds, bits, genes):
     real_chromosome = []
@@ -27,7 +27,7 @@ def objective_function(t):
     y = t[1]
     z = t[2]
 
-    Objective_max = x**3 - y**3 - z**4 + x * y * z
+    Objective_max = x**2 +y**2 +z**2 + x*y +z*y +x*z/13 
 
     return Objective_max
 
@@ -119,16 +119,16 @@ class GeneticAlgorithm:
                     min_fitness - 10
                 )  # -10 because fitness can't be zero
                 self.fitness_sum += chromosome.fitness
-                # print(self.fitness_sum)
             self.fitness_average = self.fitness_sum / len(pop)
         else:
             for chromosome in pop:
                 self.fitness_sum += chromosome.fitness
+        self.fitness_average = self.fitness_sum / len(pop)
         for chromosome in pop:
             chromosome.prob = chromosome.fitness / self.fitness_sum
             self.qprob += chromosome.prob
             chromosome.qprob += self.qprob
-        self.fitness_average = self.fitness_sum / len(pop)
+        
 
     def selection(self):
         t = []
@@ -149,12 +149,12 @@ class GeneticAlgorithm:
             parent2 = pop[2 * i].genes
             if random.random() <= crossover_rate:
                 child1, child2 = multiple_crossover(parent1, parent2, cp)
-                newpop.append(child1)
-                newpop.append(child2)
+                newpop.extend([child1,child2])
+                
 
             else:
-                newpop.append(pop[2 * i - 1])
-                newpop.append(pop[2 * i])
+                newpop.extend(pop[2 * i - 1],pop[2*i])
+                
         self.population = newpop
 
     def mutation(self, mutation_rate: float):
@@ -191,25 +191,31 @@ class GeneticAlgorithm:
         return best_chrom
 
 
-start = time.time()
+
+
+
+plt.ylabel('x,y,z')
+plt.xlabel('generations')
+
 ga = GeneticAlgorithm(100)
 # random.seed(2)
-fitness = 0
-for i in range(1000):
+s = [i for i in range(100)]
+fitn = [] 
+avr = [] 
+for i in range(40):
+    
     ga.misc()
     ga.selection()
-    ga.crossover(1, 1)
-    ga.mutation(0.05)
-    if fitness < ga.best().fitness:
-        fitness = ga.best().fitness
-print(fitness)
-end = time.time()
-print(end - start)
+    ga.crossover(1,1)
+    ga.mutation(0.1)
+    fitn.append(ga.best())
+    avr.append(ga.fitness_average)
+    plt.scatter(s[i],fitn[i].fitness,color='r',s=10)
+    plt.scatter(s[i],avr[i],color='g',s=10)
+    plt.pause(0.1)
 
 
-# ga.misc()
-#
-# ga.selection()
-# print(ga)
-# ga.crossover(1,2)
-# print(ga)
+
+
+
+plt.show()
