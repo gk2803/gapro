@@ -6,10 +6,15 @@ import sys
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
 
 
-POP_SIZE = 10
+POP_SIZE = 100
 BITS = 20
 BOUNDS = [[0, 10], [0, 20], [0, 30]]
-Pm = 0.7
+Pm = 0.05
+GENERATIONS = 100
+Pc = 1
+Cp = 4
+
+
 
 def decode(bounds, bits, genes):
     real_chromosome = []
@@ -153,7 +158,7 @@ class GeneticAlgorithm:
                 
 
             else:
-                newpop.extend(pop[2 * i - 1],pop[2*i])
+                newpop.extend([pop[2 * i - 1],pop[2*i]])
                 
         self.population = newpop
 
@@ -190,32 +195,26 @@ class GeneticAlgorithm:
                 best_chrom = chromosome
         return best_chrom
 
-
-
-
-
-plt.ylabel('x,y,z')
-plt.xlabel('generations')
-
-ga = GeneticAlgorithm(100)
-# random.seed(2)
-s = [i for i in range(100)]
-fitn = [] 
-avr = [] 
-for i in range(40):
+    def run(self):
+        ga = GeneticAlgorithm(POP_SIZE)
+        s = [i for i in range(GENERATIONS)]
+        fitn = [] 
+        avr = [] 
+        for i in range(GENERATIONS):
     
-    ga.misc()
-    ga.selection()
-    ga.crossover(1,1)
-    ga.mutation(0.1)
-    fitn.append(ga.best())
-    avr.append(ga.fitness_average)
-    plt.scatter(s[i],fitn[i].fitness,color='r',s=10)
-    plt.scatter(s[i],avr[i],color='g',s=10)
-    plt.pause(0.1)
+            ga.misc()
+            ga.selection()
+            ga.crossover(Pc,Cp)
+            ga.mutation(Pm)
+            fitn.append(ga.best())
+            avr.append(ga.fitness_average)
+            plt.scatter(s[i],fitn[i].fitness,color='r',s=10)
+            plt.scatter(s[i],avr[i],color='g',s=10)
+
+        plt.show()
 
 
 
 
-
-plt.show()
+ga = GeneticAlgorithm(POP_SIZE)
+ga.run()
