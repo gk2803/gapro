@@ -216,5 +216,6 @@ class GeneticAlgorithm:
 
 
 
+        
 ga = GeneticAlgorithm(POP_SIZE)
 ga.run()
