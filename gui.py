@@ -2,8 +2,6 @@ import tkinter as tk
 from tkinter import ttk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
-import gnt
-
 
 
 class Sliders:
@@ -70,87 +68,115 @@ class MainWindow:
         '''
         SLIDERS
         '''
+
+        #pop slider
         self.pop_slider = tk.Scale(
             root,
             from_=2,
             to=500,
             resolution=2,
             orient="horizontal",
-        ).grid(
+        )
+        self.pop_slider.grid(
             row=0,
             column=1,
         )
         
+        #gen slider
         self.generation_slider = tk.Scale(
             root,
             from_=2,
             to=1000,
             resolution=2,
             orient="horizontal",
-        ).grid(
+        )
+        
+        self.generation_slider.grid(
             row=1,
             column=1,
         )
 
+        #pm slider
         self.pm_slider = tk.Scale(
             root,
             from_=0,
             to=1,
             resolution=0.01,
             orient="horizontal",
-        ).grid(
+        )
+        
+        self.pm_slider.grid(
             row=2,
             column=1,
         )
 
+        #pc_slider
         self.pc_slider = tk.Scale(
             root,
             from_=0,
             to=1,
             resolution=0.01,
             orient="horizontal",
-        ).grid(
+        )
+        
+        self.pc_slider.grid(
             row=3,
             column=1,
         )
 
+        #cp slider 
         self.cp_slider = tk.Scale(
             root,
             from_=1,
             to=38,
             resolution=1,
             orient="horizontal",
-        ).grid(
+            
+            
+        )
+        
+        self.cp_slider.grid(
             row=4,
             column=1,
         )
 
+        #bits slider 
         self.bits_slider = tk.Scale(
             root,
             from_=2,
             to=40,
             resolution=1,
             orient="horizontal",
-        ).grid(
+        )
+        
+        self.bits_slider.grid(
             row=5,
             column=1,
         )
 
-        '''BUTTONS'''
+        '''
+        BUTTONS
+        '''
+        #run button 
         self.run_button = tk.Button(
             self.root,
             text="Εκτέλεση",
             width=10,
-            font="none 14"
-        ).grid(row=7, column=0)
+            font="none 14",
+            command=self.run
+        )
+        self.run_button.grid(row=7, column=0)
 
+        #exit button
         exit_button = tk.Button(
             self.root,
             text="Έξοδος",
             width=10,
             font="none 14",
             command=self.root.destroy,
-        ).grid(row=7, column=1)
+        )
+        
+        exit_button.grid(row=7, column=1)
 
 
         fig = plt.Figure(figsize=(4.5, 3), facecolor="#efebe9")
@@ -168,9 +194,10 @@ class MainWindow:
         canvas.get_tk_widget().grid(row=6, column=0, columnspan=2)
         
         self.root.mainloop()
-    
+
     def run(self):
-        ga = gnt.GeneticAlgorithm(self.pop_slider.get())
+        print(self.pop_slider.get(),self.generation_slider.get(),self.bits_slider.get(),  self.pm_slider.get(),self.pc_slider.get())
+    
         
         
 
@@ -178,6 +205,7 @@ class MainWindow:
 def main():
     root = tk.Tk()
     window = MainWindow(root, "#efebe9")
+    
 
 
 main()
