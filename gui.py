@@ -1,8 +1,15 @@
+from itertools import count
 import tkinter as tk
 from tkinter import ttk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2Tk
+from gnt import *
+import numpy as np 
+from matplotlib import animation 
+import time 
+from matplotlib.ticker import MaxNLocator
 
+BOUNDS = [[0, 10], [0, 20], [0, 30]]
 
 class Sliders:
     def __init__(self, root, row, col, start, end, iter):
@@ -20,23 +27,32 @@ class MainWindow:
         self.color = color
         self.root = root
         self.root.resizable(0, 0)
-        self.root.geometry("400x600")
-        root.columnconfigure(0, weight=1)
+        self.root.geometry("800x700")
+        self.root.columnconfigure(0,weight=1)
+        self.root.rowconfigure(7,weight=1)
         self.root.configure(bg=self.color)
         '''
         LABELS
         '''
+        function_label = population_label = tk.Label(
+            self.root,
+            text="Συνάρτηση τριών μεταβλητών f(x, y, z)",
+            fg="#000000",
+            font="Courier 14 bold",
+            bg=self.color,
+        ).grid(row=0, column=0, sticky=tk.W)
+
         population_label = tk.Label(
             self.root,
             text="Πληθυσμός: ",
             fg="#000000",
             font="Courier 14 bold",
             bg=self.color,
-        ).grid(row=0, column=0, sticky=tk.W)
+        ).grid(row=1, column=0, sticky=tk.W)
         
         generations_label = tk.Label(
             self.root, text="Γενιές:", fg="black", font="Courier 14 bold", bg=self.color
-        ).grid(row=1, column=0, sticky=tk.W)
+        ).grid(row=2, column=0, sticky=tk.W)
         
         pm_label = tk.Label(
             self.root,
@@ -44,7 +60,7 @@ class MainWindow:
             fg="black",
             font="Courier 14 bold",
             bg=self.color,
-        ).grid(row=2, column=0, sticky=tk.W)
+        ).grid(row=3, column=0, sticky=tk.W)
         
         pc_label = tk.Label(
             self.root,
@@ -52,7 +68,7 @@ class MainWindow:
             fg="black",
             font="Courier 14 bold",
             bg=self.color,
-        ).grid(row=3, column=0, sticky=tk.W)
+        ).grid(row=4, column=0, sticky=tk.W)
         
         cp_label = tk.Label(
             self.root,
@@ -60,16 +76,16 @@ class MainWindow:
             fg="black",
             font="Courier 14 bold",
             bg=self.color,
-        ).grid(row=4, column=0, sticky=tk.W)
+        ).grid(row=5, column=0, sticky=tk.W)
         
         bits_label = tk.Label(
             self.root, text="Bits: ", fg="black", font="Courier 14 bold", bg=self.color
-        ).grid(row=5, column=0, sticky=tk.W)
+        ).grid(row=6, column=0, sticky=tk.W)
         '''
         SLIDERS
         '''
 
-        #pop slider
+        '''pop slider'''
         self.pop_slider = tk.Scale(
             root,
             from_=2,
@@ -78,11 +94,11 @@ class MainWindow:
             orient="horizontal",
         )
         self.pop_slider.grid(
-            row=0,
+            row=1,
             column=1,
         )
         
-        #gen slider
+        '''generations slider'''
         self.generation_slider = tk.Scale(
             root,
             from_=2,
@@ -92,11 +108,11 @@ class MainWindow:
         )
         
         self.generation_slider.grid(
-            row=1,
+            row=2,
             column=1,
         )
 
-        #pm slider
+        '''pm slider'''
         self.pm_slider = tk.Scale(
             root,
             from_=0,
@@ -106,11 +122,11 @@ class MainWindow:
         )
         
         self.pm_slider.grid(
-            row=2,
+            row=3,
             column=1,
         )
 
-        #pc_slider
+        '''pc slider'''
         self.pc_slider = tk.Scale(
             root,
             from_=0,
@@ -120,11 +136,11 @@ class MainWindow:
         )
         
         self.pc_slider.grid(
-            row=3,
+            row=4,
             column=1,
         )
 
-        #cp slider 
+        '''cp slider'''
         self.cp_slider = tk.Scale(
             root,
             from_=1,
@@ -136,11 +152,11 @@ class MainWindow:
         )
         
         self.cp_slider.grid(
-            row=4,
+            row=5,
             column=1,
         )
 
-        #bits slider 
+        '''bits slider'''
         self.bits_slider = tk.Scale(
             root,
             from_=2,
@@ -150,14 +166,20 @@ class MainWindow:
         )
         
         self.bits_slider.grid(
-            row=5,
+            row=6,
             column=1,
         )
+
+        '''function entry'''
+        self.function_entry = tk.Entry(self.root, width=35, font='Courier')
+        self.function_entry.grid(row=0, column=1, sticky=tk.E)
+        
 
         '''
         BUTTONS
         '''
-        #run button 
+
+        '''run button '''
         self.run_button = tk.Button(
             self.root,
             text="Εκτέλεση",
@@ -165,9 +187,9 @@ class MainWindow:
             font="none 14",
             command=self.run
         )
-        self.run_button.grid(row=7, column=0)
+        self.run_button.grid(row=9, column=0, sticky=tk.W)
 
-        #exit button
+        '''exit button'''
         exit_button = tk.Button(
             self.root,
             text="Έξοδος",
@@ -176,30 +198,55 @@ class MainWindow:
             command=self.root.destroy,
         )
         
-        exit_button.grid(row=7, column=1)
+        exit_button.grid(row=9, column=1,sticky=tk.E)
 
 
-        fig = plt.Figure(figsize=(4.5, 3), facecolor="#efebe9")
+        self.fig = plt.Figure(figsize=(7,4),dpi=100, facecolor="#efebe9")
 
-        plt.rcParams.update({"font.size": 8})
-        ax = fig.add_subplot()
-        ax.set_facecolor("#efebe9")
-        ax.set_xlabel("generations")
-        ax.set_ylabel("fitness")
-        canvas = FigureCanvasTkAgg(
-            fig,
+        
+        #plt.rcParams['animation.ffmpeg_path'] = 'C:\Users\geork\AppData\Local\Programs\Python\Python310\Lib\site-packages\ffmpeg'
+        self.canvas = FigureCanvasTkAgg(
+            self.fig,
             master=self.root,
         )
+        self.canvas.get_tk_widget().grid(row=7, column=0,sticky=tk.W)
         
-        canvas.get_tk_widget().grid(row=6, column=0, columnspan=2)
         
+        self.axes = self.fig.add_subplot(111)
         self.root.mainloop()
 
     def run(self):
-        print(self.pop_slider.get(),self.generation_slider.get(),self.bits_slider.get(),  self.pm_slider.get(),self.pc_slider.get())
-    
         
         
+        generations = self.generation_slider.get()
+        ga = GeneticAlgorithm(generations, self.bits_slider.get(), BOUNDS, self.pm_slider.get(), self.pc_slider.get(), self.cp_slider.get())
+        
+        self.ys = []
+        self.zs = []
+
+        for _ in range(generations):
+            ga.run()
+            self.ys.append(ga.best().fitness)
+            self.zs.append(ga.fitness_average)
+            
+        self.fig.clear()
+        self.axes = self.fig.add_subplot(111)
+        
+        self.axes.plot(self.ys,'r', label='max fitness')
+        self.axes.plot(self.zs,'g', label='average fitness')
+        self.axes.set_ylabel('fitness')
+        self.axes.set_xlabel('generations')
+        self.axes.yaxis.set_label_position("right")
+        print(self.function_entry.get())
+        #ypomnima
+        self.axes.legend(bbox_to_anchor=(0.5, 1.1), loc='upper center', ncol=2, fancybox=True, shadow=True)
+        #forces integer spacing between generations 
+        self.axes.xaxis.set_major_locator(MaxNLocator(integer=True))
+
+        self.canvas.draw()
+
+
+
 
 
 def main():
