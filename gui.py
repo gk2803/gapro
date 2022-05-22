@@ -228,17 +228,20 @@ class MainWindow:
         
         objective_function = self.function_entry.get()
         generations = self.generation_slider.get()
+        print(self.pc_slider.get())
         ga = GeneticAlgorithm(self.pop_slider.get(), self.bits_slider.get(), BOUNDS, self.pm_slider.get(), self.pc_slider.get(), self.cp_slider.get(), eval('lambda x,y,z:'+objective_function))
         
         b = []
         a = []
+        print(ga)
         for _ in range(generations):
             ga.run()
             b.append(ga.best().fitness)
-            
+            print(ga.best().fitness)
+            print(ga)
             a.append(ga.fitness_average)
-        print(ga)
-        print(b)
+        #print(ga)
+        #print(b)
         self.fig.clear()
         self.axes = self.fig.add_subplot(111)
         

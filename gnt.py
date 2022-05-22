@@ -19,8 +19,7 @@ class Chromosome:
         self.real_genes = self.decode(self.genes)
         x, y, z = self.real_genes[0], self.real_genes[1], self.real_genes[2]
         self.fitness = objective_function(x, y, z)
-        self.scaled_fitness = 0
-
+        self.scaled_fitness = self.fitness 
     def decode(self, genes):
         real_chromosome = []
         for i in range(len(self.bounds)):
@@ -43,6 +42,7 @@ class GeneticAlgorithm:
         self.pm = pm
         self.pc = pc
         self.cp = cp
+        self.flag = False 
         #create a population of random chromosomes
         self.population = [
             Chromosome(
@@ -58,14 +58,28 @@ class GeneticAlgorithm:
 
     # calculates fitness scores/qprob
     def misc(self):
-        
+        for chrome in self.population:
+            if chrome.fitness<=0:
+                self.flag = True
+                break
         self.fitness_sum = sum([chrome.fitness for chrome in self.population])
         self.fitness_average = self.fitness_sum / len(self.population)
         self.qprob = 0
-        for chromosome in self.population:
-            chromosome.prob = chromosome.fitness / self.fitness_sum
-            self.qprob += chromosome.prob
-            chromosome.qprob += self.qprob
+        if self.flag:
+            min_fitness = min(self.population, key=attrgetter("fitness")).fitness
+            
+            for chrome in self.population:
+                chrome.scaled_fitness -= (min_fitness -10)
+            self.scaled_sum = sum([chrome.scaled_fitness for chrome in self.population])
+            for chromosome in self.population:
+                chromosome.prob = chromosome.scaled_fitness / self.scaled_sum
+                self.qprob += chromosome.prob
+                chromosome.qprob += self.qprob 
+        else:
+            for chromosome in self.population:
+                chromosome.prob = chromosome.fitness / self.fitness_sum
+                self.qprob += chromosome.prob
+                chromosome.qprob += self.qprob
 
     def roulette_selection(self):
         t = []
@@ -187,3 +201,9 @@ class GeneticAlgorithm:
         self.roulette_selection()
         self.crossover()
         self.mutation()
+
+
+#ga = GeneticAlgorithm(2,10,[[0,10],[0,20],[0,30]],0,0,1,lambda x,y,z:x*2 + y*2 + z*3 + x*y*z)
+#print(ga)
+#ga.run()
+#print(ga)
