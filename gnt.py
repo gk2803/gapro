@@ -160,6 +160,15 @@ class GeneticAlgorithm:
 
     def best(self):
         return max(self.population, key=attrgetter("fitness"))
+    
+    def best_x0(self):
+        return '{:.2f}'.format(self.best().real_genes[0]) if self.best().real_genes[0] else ""
+    
+    def best_x1(self):
+        return '{:.2f}'.format(self.best().real_genes[1]) if self.best().real_genes[1] else "" 
+
+    def best_x2(self):
+        return '{:.2f}'.format(self.best().real_genes[2]) if self.best().real_genes[2] else "" 
 
     @staticmethod
     def multiple_crossover(parent1, parent2, cp):
@@ -208,5 +217,3 @@ class GeneticAlgorithm:
 
 
 
-# objective_function = 'x**2 + y**2'
-# ga = GeneticAlgorithm(10,20,[[0,10],[0,20]],0,1,1,eval("lambda *args:"+ objective_function ))

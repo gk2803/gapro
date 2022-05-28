@@ -17,7 +17,7 @@ class MainWindow:
         self.color = color
         self.root = root
         self.root.resizable(0, 0)
-        self.root.geometry("700x800")
+        self.root.geometry("700x900")
         self.root.title("Γενετικοί")
         #self.root.columnconfigure(0,weight=1)
         #self.root.rowconfigure(8, weight=1)
@@ -26,11 +26,10 @@ class MainWindow:
         self.top_frame = tk.Frame(self.root, width=400,height=400,pady=3,bg=self.color,relief=tk.RIDGE, bd=8)
         self.bot_frame = tk.Frame(self.root, width=400, height=400,pady=3,bg=self.color)
         self.inner_frame = tk.Frame(self.top_frame,width=200, height=200,pady=3,relief=tk.RIDGE,bd=3, bg=self.color)
-        self.inner_frame.grid(row=7,columnspan=3)
-        self.top_frame.grid(row=0)
-        self.bot_frame.grid(row=1)
+        
         
         '''labels'''
+        #top_frame
         variables_label = tk.Label(
             self.top_frame,
             text="   Πεδία Ορισμού    ",
@@ -41,8 +40,6 @@ class MainWindow:
             borderwidth=2
         )
         
-        variables_label.grid(row=0, column=0, )
-
         function_label = tk.Label(
             self.top_frame,
             text="      Συνάρτηση     ",
@@ -53,8 +50,6 @@ class MainWindow:
             borderwidth=2
         )
         
-        function_label.grid(row=2, column=0, )
-
         population_label = tk.Label(
             self.top_frame,
             text="      Πληθυσμός     ",
@@ -63,8 +58,7 @@ class MainWindow:
             bg="#C6BFBB",
             relief="raised",
             borderwidth=2,
-        )
-        population_label.grid(row=4, column=0,)
+        )     
 
         generations_label = tk.Label(
             self.top_frame,
@@ -74,8 +68,7 @@ class MainWindow:
             bg="#C6BFBB",
             relief="raised",
             borderwidth=2,
-        )
-        generations_label.grid(row=0, column=1, )
+        )        
 
         pm_label = tk.Label(
             self.top_frame,
@@ -86,8 +79,7 @@ class MainWindow:
             relief="raised",
             borderwidth=2,
         )
-        pm_label.grid(row=4, column=1,)
-
+        
         pc_label = tk.Label(
             self.top_frame,
             text="Π. Διασταύρωσης ",
@@ -97,8 +89,7 @@ class MainWindow:
             relief="raised",
             borderwidth=2,
         )
-        pc_label.grid(row=2, column=1, )
-
+        
         cp_label = tk.Label(
             self.top_frame,
             text="Σημεία διασταύρωσης",
@@ -108,8 +99,7 @@ class MainWindow:
             relief="raised",
             borderwidth=2,
         )
-        cp_label.grid(row=0, column=2, )
-
+        
         bits_label = tk.Label(
             self.top_frame,
             text="       Bits        ",
@@ -119,8 +109,7 @@ class MainWindow:
             relief="raised",
             borderwidth=2,
         )
-        bits_label.grid(row=2, column=2, )
-
+        
         selection_label = tk.Label(
             self.top_frame,
             text=" Τελεστής Επιλογής  ",
@@ -130,133 +119,14 @@ class MainWindow:
             relief="raised",
             borderwidth=2,
         )
-        selection_label.grid(row=4, column=2, )
-
+        
         self.bounds_label = tk.Label(
             self.top_frame,
             text='',
             bg=self.color,
         )
-        self.bounds_label.grid(row=1,column=0,sticky=tk.E,padx=10)
-
-        cur_label = tk.Label(
-            self.inner_frame,
-            text="Τρέχων",
-            fg="white",
-            font="Courier",
-            bg="#343434",
-            relief="raised",
-            borderwidth=2,
-        )
-        cur_label.grid(row=1,column=0)
-
-        bestest_label = tk.Label(
-            self.inner_frame,
-            text=" Best ",
-            fg="white",
-            font="Courier",
-            bg="#343434",
-            relief="raised",
-            borderwidth=2,
-        )
-        bestest_label.grid(row=2,column=0)
-
-        gener_label = tk.Label(
-            self.inner_frame,
-            text="  Γενιά  ",
-            fg="black",
-            font="Courier",
-            bg="#C0C0C0",
-            relief="raised",
-            borderwidth=2,
-        )
-        gener_label.grid(row=0,column=1)
-        best_label = tk.Label(
-            self.inner_frame,
-            text="Καλύτερη Λύση",
-            fg="black",
-            font="Courier",
-            bg="#C0C0C0",
-            relief="raised",
-            borderwidth=2,
-        )
-        best_label.grid(row=0,column=2,sticky=tk.E)
-        average_label = tk.Label(
-            self.inner_frame,
-            text="Μ.Ο. Λύσεων",
-            fg="black",
-            font="Courier",
-            bg="#C0C0C0",
-            relief="raised",
-            borderwidth=2,
-        )
-        average_label.grid(row=0,column=3,sticky=tk.W)
-
+        #top frame - sliders
         
-        
-
-        self.vars_output = tk.Label(
-            self.inner_frame,
-            text="",
-            fg="black",
-            font="Courier",
-            bg=self.color,            
-        )
-        self.vars_output.grid(row=1,column=4)
-
-        self.gener_output = tk.Label(
-            self.inner_frame,
-            text="",
-            fg="black",
-            font="Courier",
-            bg=self.color,            
-        )
-        self.gener_output.grid(row=1,column=1)
-
-        self.best_output = tk.Label(
-            self.inner_frame,
-            text="",
-            fg="black",
-            font="Courier",
-            bg=self.color,
-            
-        )
-        self.best_output.grid(row=1,column=2)
-
-        self.avg_output = tk.Label(
-            self.inner_frame,
-            text="",
-            fg="black",
-            font="Courier",
-            bg=self.color,
-            
-        )
-        self.avg_output.grid(row=1,column=3)
-        
-        self.best_gen_output = tk.Label(
-            self.inner_frame,
-            text="",
-            fg="black",
-            font="Courier",
-            bg=self.color,
-            
-        )
-
-        self.best_gen_output.grid(row=2, column=1)
-
-        self.best_sol_output = tk.Label(
-            self.inner_frame,
-            text="",
-            fg="black",
-            font="Courier",
-            bg=self.color,
-            
-        )
-        self.best_sol_output.grid(row=2, column=2)
-    #
-        '''
-        Sliders
-        '''        
         self.pop_slider = tk.Scale(
             self.top_frame,
             from_=2,
@@ -265,10 +135,7 @@ class MainWindow:
             orient="horizontal",
             bg= self.color
         )
-        self.pop_slider.grid(
-            row=5,
-            column=0,
-        )
+        
 
         self.generation_slider = tk.Scale(
             self.top_frame,
@@ -279,10 +146,7 @@ class MainWindow:
             bg= self.color
         )
 
-        self.generation_slider.grid(
-            row=1,
-            column=1,
-        )
+        
 
         self.pm_slider = tk.Scale(
             self.top_frame,
@@ -293,10 +157,7 @@ class MainWindow:
             bg= self.color,
         )
 
-        self.pm_slider.grid(
-            row=5,
-            column=1,
-        )
+        
 
         self.pc_slider = tk.Scale(
             self.top_frame,
@@ -307,10 +168,7 @@ class MainWindow:
             bg= self.color
         )
 
-        self.pc_slider.grid(
-            row=3,
-            column=1,
-        )
+        
 
         self.bits_slider = tk.Scale(
             self.top_frame,
@@ -322,10 +180,7 @@ class MainWindow:
             bg= self.color
         )
 
-        self.bits_slider.grid(
-            row=3,
-            column=2,
-        )
+        
 
         self.cp_slider = tk.Scale(
             self.top_frame,
@@ -336,42 +191,261 @@ class MainWindow:
             bg= self.color
         )
 
-        self.cp_slider.grid(
-            row=1,
-            column=2,
-        )
-        '''
-        dropdown
-        '''
+        #top frame - dropdown
         self.var=tk.StringVar(self.top_frame)
+        self.var2=tk.StringVar()
         self.choices = {
             'x[0]':'0,10',
             'x[1]':'0,20',
             'x[2]':'0,30',
         }
         self.option = tk.OptionMenu(self.top_frame, self.var, *self.choices)
-        
-        self.option.grid(row=1,column=0,sticky=tk.W)
-        self.var2=tk.StringVar()
-        
-        
-
-        '''
-        entries
-        '''
-        #function
-        self.function_entry = tk.Entry(self.top_frame,width=26, font=("Courier", 10 ))       
-        self.function_entry
-        self.function_entry.grid(row=3, column=0, )        
+        #function 
+        self.function_entry = tk.Entry(self.top_frame,width=26, font=("Courier", 10 ))
         #bounds
-        self.vars_entry = tk.Entry(self.top_frame, width=5, font='Courier',text=self.var2)
-        self.vars_entry.grid(row=1, column=0,)
+        self.var2=tk.StringVar()
         self.var2.set('0,10')
+        self.vars_entry = tk.Entry(self.top_frame, width=5, font='Courier',text=self.var2)
         self.vars_entry.bind('<Return>',self.bind_func)
-        '''
-        buttons
-        '''
+        #radio buttons
+        self.v = tk.IntVar()
+        self.tourn_button = tk.Radiobutton(self.top_frame,bg=self.color, text="Tournament",variable=self.v,value=1)
         
+        self.roulette_button = tk.Radiobutton(self.top_frame, bg=self.color, text="Roulette wheel",variable=self.v,value=2)
+        #inner frame 
+
+        cur_label = tk.Label(
+            self.inner_frame,
+            text="Τρέχων",
+            fg="white",
+            font="Courier",
+            bg="#343434",
+            relief="raised",
+            borderwidth=2,
+        )        
+
+        bestest_label = tk.Label(
+            self.inner_frame,
+            text=" Best ",
+            fg="white",
+            font="Courier",
+            bg="#343434",
+            relief="raised",
+            borderwidth=2,
+        )        
+
+        gener_label = tk.Label(
+            self.inner_frame,
+            text="  Γενιά  ",
+            fg="black",
+            font="Courier",
+            bg="#C0C0C0",
+            relief="raised",
+            borderwidth=2,
+        )
+
+        best_label = tk.Label(
+            self.inner_frame,
+            text="Καλύτερη Λύση",
+            fg="black",
+            font="Courier",
+            bg="#C0C0C0",
+            relief="raised",
+            borderwidth=2,
+        )
+        
+        average_label = tk.Label(
+            self.inner_frame,
+            text="Μ.Ο. Λύσεων",
+            fg="black",
+            font="Courier",
+            bg="#C0C0C0",
+            relief="raised",
+            borderwidth=2,
+        )
+
+        gener_label2 = tk.Label(
+            self.inner_frame,
+            text="  Γενιά  ",
+            fg="black",
+            font="Courier",
+            bg="#C0C0C0",
+            relief="raised",
+            borderwidth=2,
+        )
+        x0 = tk.Label(
+            self.inner_frame,
+            text="x[0]",
+            fg="black",
+            font="Courier",
+            bg="#C0C0C0",
+            relief="raised",
+            borderwidth=2,
+        )
+        x1 = tk.Label(
+            self.inner_frame,
+            text="x[1]",
+            fg="black",
+            font="Courier",
+            bg="#C0C0C0",
+            relief="raised",
+            borderwidth=2,
+        )
+        x2 = tk.Label(
+            self.inner_frame,
+            text="     x[2]     ",
+            fg="black",
+            font="Courier",
+            bg="#C0C0C0",
+            relief="raised",
+            borderwidth=2,
+        )
+
+        cur_label2 = tk.Label(
+            self.inner_frame,
+            text="Τρέχων",
+            fg="white",
+            font="Courier",
+            bg="#343434",
+            relief="raised",
+            borderwidth=2,
+        )        
+
+        bestest_label2 = tk.Label(
+            self.inner_frame,
+            text=" Best ",
+            fg="white",
+            font="Courier",
+            bg="#343434",
+            relief="raised",
+            borderwidth=2,
+        )
+              
+               
+        self.vars_output = tk.Label(
+            self.inner_frame,
+            text="",
+            fg="black",
+            font="Courier",
+            bg=self.color,            
+        )
+        
+        self.gener_output = tk.Label(
+            self.inner_frame,
+            text="",
+            fg="black",
+            font="Courier",
+            bg=self.color,            
+        )
+        
+        self.best_output = tk.Label(
+            self.inner_frame,
+            text="",
+            fg="black",
+            font="Courier",
+            bg=self.color,
+            
+        )
+        
+        self.avg_output = tk.Label(
+            self.inner_frame,
+            text="",
+            fg="black",
+            font="Courier",
+            bg=self.color,
+            
+        )
+                
+        self.best_gen_output = tk.Label(
+            self.inner_frame,
+            text="",
+            fg="black",
+            font="Courier",
+            bg=self.color,
+            
+        )
+               
+
+        self.best_sol_output = tk.Label(
+            self.inner_frame,
+            text="",
+            fg="black",
+            font="Courier",
+            bg=self.color,
+            
+        )
+        
+        self.gener2_output = tk.Label(
+            self.inner_frame,
+            text="",
+            fg="black",
+            font="Courier",
+            bg=self.color,
+            
+        )
+
+        self.x0_output = tk.Label(
+            self.inner_frame,
+            text="",
+            fg="black",
+            font="Courier",
+            bg=self.color,
+            
+        )
+        self.x1_output = tk.Label(
+            self.inner_frame,
+            text="",
+            fg="black",
+            font="Courier",
+            bg=self.color,
+            
+        )
+        self.x2_output = tk.Label(
+            self.inner_frame,
+            text="",
+            fg="black",
+            font="Courier",
+            bg=self.color,
+            
+        )
+
+        self.best_gener2_output = tk.Label(
+            self.inner_frame,
+            text="",
+            fg="black",
+            font="Courier",
+            bg=self.color,
+            
+        )
+
+        self.best_x0_output = tk.Label(
+            self.inner_frame,
+            text="",
+            fg="black",
+            font="Courier",
+            bg=self.color,
+            
+        )
+        self.best_x1_output = tk.Label(
+            self.inner_frame,
+            text="",
+            fg="black",
+            font="Courier",
+            bg=self.color,
+            
+        )
+        self.best_x2_output = tk.Label(
+            self.inner_frame,
+            text="",
+            fg="black",
+            font="Courier",
+            bg=self.color,
+            
+        )
+
+
+
+        #bottom frame
         self.run_button = tk.Button(
             self.bot_frame,
             text="Εκτέλεση",
@@ -379,9 +453,7 @@ class MainWindow:
             font="none 14",
             command=lambda: threading.Thread(target=self.run).start(),
         )
-        self.run_button.grid(row=2, column=0, sticky=tk.W)
 
-        
         exit_button = tk.Button(
             self.bot_frame,
             text="Έξοδος",
@@ -389,31 +461,99 @@ class MainWindow:
             font="none 14",
             command=self.root.destroy,
         )
-
-        exit_button.grid(row=2, column=2, sticky=tk.E)
-        '''
-        radiobutton 
-        '''
-        self.v = tk.IntVar()
-        
-        self.tourn_button = tk.Radiobutton(self.top_frame,bg=self.color, text="Tournament",variable=self.v,value=1)
-        self.tourn_button.grid(row=5,column=2)
-        self.roulette_button = tk.Radiobutton(self.top_frame, bg=self.color, text="Roulette wheel",variable=self.v,value=2)
-        self.roulette_button.grid(row=6,column=2)
-        
-
-        '''canvas'''
+        #canvas
         self.fig = plt.Figure(figsize=(7, 4), dpi=100, facecolor="#efebe9")
-
         self.canvas = FigureCanvasTkAgg(
             self.fig,
             master=self.bot_frame,
         )
-        self.canvas.get_tk_widget().grid(row=0, column=0, columnspan=3)
         self.axes = self.fig.add_subplot(111)
 
+        #frames
+        self.inner_frame.grid(row=7,columnspan=5,sticky='nsew')
+        self.top_frame.grid(row=0)
+        self.bot_frame.grid(row=1)
+        #top
+        variables_label.grid(row=0, column=0, )
+        function_label.grid(row=2, column=0, )
+        population_label.grid(row=4, column=0,)
+        generations_label.grid(row=0, column=1, )
+        pm_label.grid(row=4, column=1,)
+        pc_label.grid(row=2, column=1, )
+        cp_label.grid(row=0, column=2, )
+        bits_label.grid(row=2, column=2, )
+        selection_label.grid(row=4, column=2, )
+        self.bounds_label.grid(row=1,column=0,sticky=tk.E,padx=10)
+        #inner
+        cur_label.grid(row=1,column=0)
+        bestest_label.grid(row=2,column=0)
 
+        gener_label.grid(row=0,column=1,)
+        best_label.grid(row=0,column=2, )
+        average_label.grid(row=0,column=3,columnspan=1,sticky=tk.E)
         
+        gener_label2.grid(row=3,column=1)
+        x0.grid(row =3, column=2,sticky='nsew')
+        x1.grid(row =3, column=3,columnspan=2,sticky='nsew')
+        x2.grid(row =3, column=5,)
+
+        cur_label2.grid(row=4, column=0)
+        bestest_label2.grid(row=5, column=0)
+        #outputs
+        self.vars_output.grid(row=1,column=4)
+        self.gener_output.grid(row=1,column=1)
+        self.best_output.grid(row=1,column=2)
+        self.avg_output.grid(row=1,column=3)
+        self.best_gen_output.grid(row=2, column=1)
+        self.best_sol_output.grid(row=2, column=2)
+
+        self.gener2_output.grid(row=4,column=1)
+        self.x0_output.grid(row=4, column=2)
+        self.x1_output.grid(row=4, column=3)
+        self.x2_output.grid(row=4, column=5)
+
+        self.best_gener2_output.grid(row=5, column=1)
+        self.best_x0_output.grid(row=5, column=2)
+        self.best_x1_output.grid(row=5,column=3)
+        self.best_x2_output.grid(row=5,column=5)
+        #sliders
+        self.pop_slider.grid(
+            row=5,
+            column=0,
+        )
+        self.generation_slider.grid(
+            row=1,
+            column=1,
+        )
+        self.pm_slider.grid(
+            row=5,
+            column=1,
+        )
+        self.pc_slider.grid(
+            row=3,
+            column=1,
+        )
+        self.bits_slider.grid(
+            row=3,
+            column=2,
+        )
+        self.cp_slider.grid(
+            row=1,
+            column=2,
+        )
+        #dropdown
+        self.option.grid(row=1,column=0,sticky=tk.W)
+        #function entry
+        self.function_entry.grid(row=3, column=0, )  
+        self.vars_entry.grid(row=1, column=0,)
+        #buttons
+        self.run_button.grid(row=2, column=0, sticky=tk.W)
+        exit_button.grid(row=2, column=2, sticky=tk.E)
+        #radio buttons
+        self.tourn_button.grid(row=5,column=2)
+        self.roulette_button.grid(row=6,column=2)
+        #canvas
+        self.canvas.get_tk_widget().grid(row=0, column=0, columnspan=3)
         '''initialize values'''
         self.pop_slider.set(100)
         self.generation_slider.set(150)
@@ -432,6 +572,7 @@ class MainWindow:
         ''''''
         if  not self.mk_int(self.vars_entry.get()):
             self.bounds_label.config(text="❌", font='Courier',fg='red')
+        
         else:
             self.bounds_label.config(text="✓", font='Courier',fg='green')
             self.choices[self.var.get()] = self.vars_entry.get() 
@@ -462,8 +603,8 @@ class MainWindow:
         except ValueError:
             return True if s == "" else False
     
-    def extract_bounds(self, dict):
-        '''returns a dictionary of strings to a list of integers'''
+    def extract_bounds(self, dict)->list:
+        '''takes a dictionary of strings, returns a list of integers'''
         return [list(map(int, dict[val].split(',')))  for val in dict if dict[val]!=""]
         
 
@@ -492,18 +633,17 @@ class MainWindow:
 
 
     def dreamcatcher(self):
-        '''catches exceptions a man can only dream of '''
+        '''tries to catch exceptions a man can only dream of '''
         try:
             objective_function = self.function_entry.get()
             bounds = self.extract_bounds(self.choices)
-            
+            print(bounds)
+            print(objective_function)
             if not any(k in objective_function for k in list(self.choices.keys())):
                 raise Exception("Καμία μεταβλητή")
             for key in self.choices.keys():
                 if self.choices[key] == "" and key in objective_function:
-                    raise Exception("Ασυμφωνία συνάρτησης με μεταβλητές Π.Ο.")
-            #if all(value == "" for value in self.choices.values()):
-            #    raise Exception("Δεν βρέθηκαν πεδία ορισμού")
+                    raise Exception("Ασυμφωνία συνάρτησης με μεταβλητές Π.Ο.")          
             for key in self.choices.keys():
                 if self.choices[key] != "" and key not in objective_function:
                     raise Exception("Ασυμφωνία συνάρτησης με μεταβλητές Π.Ο.")
@@ -539,8 +679,11 @@ class MainWindow:
             
             for i in range(1,self.generations):
                 
-                
+                self.x0_output.configure(text=ga.best_x0())
+                self.x1_output.configure(text=ga.best_x1())
+                self.x2_output.configure(text=ga.best_x2())
                 self.gener_output.configure(text=i+1)
+                self.gener2_output.configure(text=i+1)
                 ga.run(self.v.get())
                 b.append(ga.best().fitness) 
                 self.best_output.configure(text=float("{:.2f}".format(b[i])))
@@ -553,6 +696,11 @@ class MainWindow:
                     best_index = i+1
                     self.best_sol_output.configure(text=float("{:.2f}".format(best)))
                     self.best_gen_output.configure(text=best_index)
+
+                    self.best_gener2_output.configure(text=best_index)
+                    self.best_x0_output.configure(text=ga.best_x0())
+                    self.best_x1_output.configure(text=ga.best_x1())
+                    self.best_x2_output.configure(text=ga.best_x2())
             self.graph(a,b)
         self.fig.clear()
         
