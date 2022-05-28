@@ -8,18 +8,18 @@ class Chromosome:
         genes: list,
         bounds: list,
         objective_function: callable,
-        prob=0,
-        qprob=0,
+        
     ):
         self.bounds = bounds
         self.genes = genes
-        self.prob = prob
-        self.qprob = qprob
+        self.prob = 0
+        self.qprob = 0
 
         self.real_genes = self.decode(self.genes)
-        x, y, z = self.real_genes[0], self.real_genes[1], self.real_genes[2]
-        self.fitness = objective_function(x, y, z)
+        
+        self.fitness = objective_function(*self.real_genes)
         self.scaled_fitness = self.fitness 
+        
     def decode(self, genes):
         real_chromosome = []
         for i in range(len(self.bounds)):
@@ -31,7 +31,8 @@ class Chromosome:
             )
             real_chromosome.append(real_value)
         return real_chromosome
-
+    
+  
 
 class GeneticAlgorithm:
     def __init__(self, size, bits, bounds, pm, pc, cp, objective_function):
@@ -43,27 +44,29 @@ class GeneticAlgorithm:
         self.pc = pc
         self.cp = cp
         self.flag = False 
-        #create a population of random chromosomes
         self.population = [
             Chromosome(
                 [
                     [str(random.randint(0, 1)) for _ in range(bits)]
-                    for _ in range(len(self.bounds)) #len(self.bounds) = number of variables
+                    for _ in range(len(self.bounds)) 
                 ],
                 self.bounds,
                 self.objective_function,
             )
             for _ in range(self.size)
         ]
+        
 
     # calculates fitness scores/qprob
     def misc(self):
+        '''prepares class for selection'''
+        self.fitness_sum = sum([chrome.fitness for chrome in self.population])
+        self.fitness_average = self.fitness_sum / len(self.population)
         for chrome in self.population:
             if chrome.fitness<=0:
                 self.flag = True
                 break
-        self.fitness_sum = sum([chrome.fitness for chrome in self.population])
-        self.fitness_average = self.fitness_sum / len(self.population)
+        
         self.qprob = 0
         if self.flag:
             min_fitness = min(self.population, key=attrgetter("fitness")).fitness
@@ -74,7 +77,8 @@ class GeneticAlgorithm:
             for chromosome in self.population:
                 chromosome.prob = chromosome.scaled_fitness / self.scaled_sum
                 self.qprob += chromosome.prob
-                chromosome.qprob += self.qprob 
+                chromosome.qprob += self.qprob
+            self.flag = False 
         else:
             for chromosome in self.population:
                 chromosome.prob = chromosome.fitness / self.fitness_sum
@@ -82,6 +86,7 @@ class GeneticAlgorithm:
                 chromosome.qprob += self.qprob
 
     def roulette_selection(self):
+        '''Fitness proportionate selection'''
         t = []
         for _ in range(self.size):
             r = random.random()
@@ -92,14 +97,8 @@ class GeneticAlgorithm:
         self.population = t
 
     def tournament_selection(self):
-        selected = []
-        for _ in range(self.size):
-            selected.append(
-                max(
-                    random.sample(self.population, 2), key=attrgetter("fitness")
-                )
-            )
-        self.population = selected
+        '''tournament based selection'''
+        self.population =  [max(random.sample(self.population,2), key=attrgetter("fitness")) for _ in range(self.size)]
 
     def crossover(self):
         pop = self.population
@@ -127,14 +126,14 @@ class GeneticAlgorithm:
 
         self.population = newpop
 
-    def mutation(self):
+    def hard_mutation(self):
         pop = self.population
         offsprings = []
         for chromosome in pop:
             z = chromosome.genes
             if random.random() <= self.pm:
                 dummy = []
-                for i in range(3):
+                for i in range(len(self.bounds)):
                     j = random.randint(0, self.bits - 1)
                     if z[i][j] == "1":  # flip
                         z[i][j] = "0"
@@ -149,6 +148,8 @@ class GeneticAlgorithm:
                     Chromosome(z, self.bounds, self.objective_function)
                 )
         self.population = offsprings
+    
+    
 
     def __str__(self):
         s = ""
@@ -159,6 +160,15 @@ class GeneticAlgorithm:
 
     def best(self):
         return max(self.population, key=attrgetter("fitness"))
+    
+    def best_x0(self):
+        return '{:.2f}'.format(self.best().real_genes[0]) if self.best().real_genes[0] else ""
+    
+    def best_x1(self):
+        return '{:.2f}'.format(self.best().real_genes[1]) if self.best().real_genes[1] else "" 
+
+    def best_x2(self):
+        return '{:.2f}'.format(self.best().real_genes[2]) if self.best().real_genes[2] else "" 
 
     @staticmethod
     def multiple_crossover(parent1, parent2, cp):
@@ -196,14 +206,14 @@ class GeneticAlgorithm:
                     child2[j][i] = parent1[j][i]
         return child1, child2
 
-    def run(self):
+    def run(self,val):
         self.misc()
-        self.roulette_selection()
+        self.tournament_selection() if val == 1 else self.roulette_selection()
         self.crossover()
-        self.mutation()
+        self.hard_mutation()
+
+    
 
 
-#ga = GeneticAlgorithm(2,10,[[0,10],[0,20],[0,30]],0,0,1,lambda x,y,z:x*2 + y*2 + z*3 + x*y*z)
-#print(ga)
-#ga.run()
-#print(ga)
+
+
