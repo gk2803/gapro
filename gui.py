@@ -636,7 +636,7 @@ class MainWindow:
         try:
             objective_function = self.function_entry.get()
             self.bounds = self.extract_bounds(self.choices)
-            p
+            
             if not any(k in objective_function for k in list(self.choices.keys())):
                 raise Exception("Καμία μεταβλητή")
             for key in self.choices.keys():
