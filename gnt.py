@@ -8,10 +8,11 @@ class Chromosome:
         genes: list,
         bounds: list,
         objective_function: callable,
-        
+        bits: int 
     ):
         self.bounds = bounds
         self.genes = genes
+        self.bits = bits 
         self.prob = 0
         self.qprob = 0
 
@@ -19,14 +20,21 @@ class Chromosome:
         
         self.fitness = objective_function(*self.real_genes)
         self.scaled_fitness = self.fitness 
-        
+    
+    
+    @classmethod
+    def rand(cls, bounds,objective_function,bits):
+        '''creates random chromosome'''
+        genes = [[str(random.randint(0,1)) for i in range(bits)] for _ in range(len(bounds))]
+        return cls(genes,bounds,objective_function,bits)
+
     def decode(self, genes):
         real_chromosome = []
         for i in range(len(self.bounds)):
             integer = int("".join(char for char in genes[i]), 2)
             real_value = self.bounds[i][0] + (
-                integer / (2 ** len(self.genes[0]))
-            ) * (  # self.genes[0] = bits
+                integer / (2 ** self.bits)
+            ) * (  
                 self.bounds[i][1] - self.bounds[i][0]
             )
             real_chromosome.append(real_value)
@@ -44,17 +52,8 @@ class GeneticAlgorithm:
         self.pc = pc
         self.cp = cp
         self.flag = False 
-        self.population = [
-            Chromosome(
-                [
-                    [str(random.randint(0, 1)) for _ in range(bits)]
-                    for _ in range(len(self.bounds)) 
-                ],
-                self.bounds,
-                self.objective_function,
-            )
-            for _ in range(self.size)
-        ]
+        self.population = [Chromosome.rand(self.bounds,objective_function,self.bits) for _ in range(size)]
+            
         
 
     # calculates fitness scores/qprob
@@ -116,10 +115,10 @@ class GeneticAlgorithm:
                 newpop.extend(
                     [
                         Chromosome(
-                            child1, self.bounds, self.objective_function
+                            child1, self.bounds, self.objective_function,self.bits
                         ),
                         Chromosome(
-                            child2, self.bounds, self.objective_function
+                            child2, self.bounds, self.objective_function,self.bits
                         ),
                     ]
                 )
@@ -144,11 +143,11 @@ class GeneticAlgorithm:
                         z[i][j] = "1"
                     dummy.append(z[i])
                 offsprings.append(
-                    Chromosome(dummy, self.bounds, self.objective_function)
+                    Chromosome(dummy, self.bounds, self.objective_function,self.bits)
                 )
             else:
                 offsprings.append(
-                    Chromosome(z, self.bounds, self.objective_function)
+                    Chromosome(z, self.bounds, self.objective_function,self.bits)
                 )
         self.population = offsprings
     
@@ -200,5 +199,6 @@ class GeneticAlgorithm:
         self.mutation()
 
     
+
 
 
