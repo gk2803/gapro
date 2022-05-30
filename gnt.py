@@ -1,6 +1,5 @@
 from operator import attrgetter
 import random
-from telnetlib import GA
 
 
 class Chromosome:
@@ -68,12 +67,17 @@ class GeneticAlgorithm:
                 self.flag = True
                 break
         
+        
+        
+    def roulette_selection(self):
+        '''Fitness proportionate selection'''
+        #scaling if negative fitness
         self.qprob = 0
         if self.flag:
             min_fitness = min(self.population, key=attrgetter("fitness")).fitness
             
             for chrome in self.population:
-                chrome.scaled_fitness -= (min_fitness -10)
+                chrome.scaled_fitness -= (min_fitness -10) #fitness can't be zero
             self.scaled_sum = sum([chrome.scaled_fitness for chrome in self.population])
             for chromosome in self.population:
                 chromosome.prob = chromosome.scaled_fitness / self.scaled_sum
@@ -85,9 +89,6 @@ class GeneticAlgorithm:
                 chromosome.prob = chromosome.fitness / self.fitness_sum
                 self.qprob += chromosome.prob
                 chromosome.qprob += self.qprob
-
-    def roulette_selection(self):
-        '''Fitness proportionate selection'''
         t = []
         for _ in range(self.size):
             r = random.random()
@@ -128,7 +129,7 @@ class GeneticAlgorithm:
 
         self.population = newpop
 
-    def hard_mutation(self):
+    def mutation(self):
         pop = self.population
         offsprings = []
         for chromosome in pop:
@@ -151,14 +152,6 @@ class GeneticAlgorithm:
                 )
         self.population = offsprings
     
-    
-
-    def __str__(self):
-        s = ""
-        for chrome in self.population:
-
-            s += f"{chrome.real_genes} fitness ={chrome.fitness}, probability = {chrome.qprob} \n"
-        return s
 
     def best(self):
         return max(self.population, key=attrgetter("fitness"))
@@ -204,7 +197,7 @@ class GeneticAlgorithm:
         self.misc()
         self.tournament_selection() if val == 1 else self.roulette_selection()
         self.crossover()
-        self.hard_mutation()
+        self.mutation()
 
     
 

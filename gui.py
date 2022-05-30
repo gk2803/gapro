@@ -481,13 +481,15 @@ class MainWindow:
         self.top_frame.grid(row=0)
         self.bot_frame.grid(row=1)
         # top
+        # 0 1 
+        # 4 0
         variables_label.grid(row=0, column=0, sticky="nsew")
-        generations_label.grid(row=0, column=1, sticky="nsew")
+        generations_label.grid(row=4, column=0, sticky="nsew")
+        population_label.grid(row=0, column=1, sticky="nsew")
         cp_label.grid(row=0, column=2, sticky="nsew")
         function_label.grid(row=2, column=0, sticky="nsew")
         pc_label.grid(row=2, column=1, sticky="nsew")
         bits_label.grid(row=2, column=2, sticky="nsew")
-        population_label.grid(row=4, column=0, sticky="nsew")
         pm_label.grid(row=4, column=1, sticky="nsew")
         selection_label.grid(row=4, column=2, sticky="nsew")
         self.bounds_label.grid(row=1, column=0,sticky=tk.E )
@@ -524,12 +526,13 @@ class MainWindow:
         self.best_x1_output.grid(row=5, column=3)
         self.best_x2_output.grid(row=5, column=5)
         # sliders
-        self.pop_slider.grid(row=5, column=0)
-        self.generation_slider.grid(row=1, column=1)
-        self.pm_slider.grid(row=5, column=1)
-        self.pc_slider.grid(row=3, column=1)
-        self.bits_slider.grid(row=3, column=2)
-        self.cp_slider.grid(row=1, column=2)
+        
+        self.pop_slider.grid(row=1, column=1,sticky='nsew')
+        self.generation_slider.grid(row=5, column=0,sticky='nsew')
+        self.pm_slider.grid(row=5, column=1,sticky='nsew')
+        self.pc_slider.grid(row=3, column=1,sticky='nsew')
+        self.bits_slider.grid(row=3, column=2,)
+        self.cp_slider.grid(row=1, column=2,)
         # dropdown bounds
         self.option.grid(row=1, column=0,padx=(0,50) )
         self.option2.grid(row=1, column=0, sticky=tk.W)
@@ -570,6 +573,7 @@ class MainWindow:
       
             menu.add_command(label=val, command=tk._setit(self.var,val))
         self.function_entry.delete(0,END)
+        self.var.set(list(self.choices.keys())[0])
         
         
         
