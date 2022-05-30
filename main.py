@@ -1,8 +1,4 @@
-import gui 
-import gnt
+import gui
 
-
-
-
-
-gu = gui.MainWindow
+if __name__ == '__main__':
+    print('Starting Genetic Algorithm App')

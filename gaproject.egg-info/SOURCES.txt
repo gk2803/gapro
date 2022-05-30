@@ -1,0 +1,8 @@
+MANIFEST.in
+README.md
+requirements.txt
+setup.py
+gaproject.egg-info/PKG-INFO
+gaproject.egg-info/SOURCES.txt
+gaproject.egg-info/dependency_links.txt
+gaproject.egg-info/top_level.txt
