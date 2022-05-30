@@ -1,5 +1,6 @@
 from operator import attrgetter
 import random
+from telnetlib import GA
 
 
 class Chromosome:
@@ -101,6 +102,7 @@ class GeneticAlgorithm:
         self.population =  [max(random.sample(self.population,2), key=attrgetter("fitness")) for _ in range(self.size)]
 
     def crossover(self):
+
         pop = self.population
         newpop = list()
         for i in range(int(len(pop) / 2)):
@@ -161,15 +163,7 @@ class GeneticAlgorithm:
     def best(self):
         return max(self.population, key=attrgetter("fitness"))
     
-    def best_x0(self):
-        return '{:.2f}'.format(self.best().real_genes[0]) if self.best().real_genes[0] else ""
     
-    def best_x1(self):
-        return '{:.2f}'.format(self.best().real_genes[1]) if self.best().real_genes[1] else "" 
-
-    def best_x2(self):
-        return '{:.2f}'.format(self.best().real_genes[2]) if self.best().real_genes[2] else "" 
-
     @staticmethod
     def multiple_crossover(parent1, parent2, cp):
         bits = len(parent1[0])
@@ -213,7 +207,5 @@ class GeneticAlgorithm:
         self.hard_mutation()
 
     
-
-
 
 
