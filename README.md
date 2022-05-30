@@ -5,9 +5,9 @@
 '''cmd
 git clone https://github.com/gk2803/project01_ga.git '''
 
-'''cmd 
+```cmd 
 python setup.py
-'''
+```
 
 '''cmd
 python main.py
