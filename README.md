@@ -23,6 +23,12 @@ python main.py
 ```
 ## Demonstration
 
+
+Μέγιστο της συνάρτησης <img src="https://latex.codecogs.com/svg.image?f(x,y,z)&space;=&space;x^2&space;&plus;&space;y^2&space;&plus;&space;z^3&space;&plus;&space;xyz">
+στα <img src="https://latex.codecogs.com/svg.image?x&space;&space;\epsilon&space;[0,10],&space;y&space;&space;\epsilon&space;[0,20],&space;z&space;\epsilon&space;[0,30],&space;">
+
+
+
 ![Screenshot](images/1.png)
 
 
