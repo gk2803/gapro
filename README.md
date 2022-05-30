@@ -1,6 +1,6 @@
 # Εύρεση μεγίστου συνάρτησης με χρήση γενετικών αλγορίθμων
 
-
+## Getting Started 
 Windows:
 
 ```cmd
@@ -21,6 +21,10 @@ source venv/bin/activate
 pip install -r requirements.txt
 python main.py
 ```
+## Demonstration
 
-![[/images/1.png]]
+![Screenshot](images/1.png)
 
+
+## Execution Example 
+![Screenshot](images/2.png)
