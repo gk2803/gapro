@@ -22,5 +22,5 @@ pip install -r requirements.txt
 python main.py
 ```
 
-![[/images/1.png]]
+![[./images/1.png]]
 
