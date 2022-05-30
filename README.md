@@ -2,15 +2,15 @@
 
 
 
-'''cmd
-git clone https://github.com/gk2803/project01_ga.git '''
+```cmd
+git clone https://github.com/gk2803/project01_ga.git ```
 
 ```cmd 
 python setup.py
 ```
 
-'''cmd
+```cmd
 python main.py
-'''
+```
 
 
