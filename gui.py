@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import END
-
+from tkinter import ttk 
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import (
     FigureCanvasTkAgg,
@@ -202,19 +202,28 @@ class MainWindow:
         self.var2 = tk.StringVar() #entry
         self.var_number = tk.IntVar() #number of variables
         self.choices = {
-            "x[0]": "0,10",
-            "x[1]": "0,20",
-            "x[2]": "0,30",
+            "x[0]": "-10,10",
+            "x[1]": "-10,10",
+            
         }
         self.option = tk.OptionMenu(self.top_frame, self.var, *self.choices)
         self.var_number = tk.IntVar()
-        self.var_number.set(3)
+        self.var_number.set(2)
         self.option2 = tk.OptionMenu(self.top_frame, self.var_number, *[*range(1,4)],command=self.set_vars )
         # function
-        self.function_entry = tk.Entry(self.top_frame, width=26, font=("Courier", 10))
+        self.function_entry = tk.StringVar()
+        self.function = ttk.Combobox(self.top_frame, textvariable=self.function_entry,width=35,height=10)
+        self.func_dict = {'Beale function':'(1.5-x[0]+x[0]*x[1])**2+(2.25-x[0]+x[0]*x[1]**2)**2+(2.625-x[0]+x[0]*x[1]**3)**2',
+        'Booth function':'(x[0]+2*x[1]-7)**2 +(2*x[0] +x[1] -5)**2',
+        'Matyas function':'0.26*(x[0]**2+x[1]**2)-0.48*x[0]*x[1]',
+        'Himmelblau\'s function':'(x[0]**2+x[1]-11)**2 + (x[0]+x[1]**2-7)**2',
+        'Three-hump camel function':'2*x[0]**2-1.05*x[0]**4+x[0]**6/6+x[0]*x[1]+x[1]**2'}
+        #adding combobox drop down list 
+        self.function['values']=list(self.func_dict.keys())
+        self.function.bind("<<ComboboxSelected>>",self.setfunc)
         # bounds
         self.var2 = tk.StringVar()
-        self.var2.set("0,10")
+        self.var2.set("-10,10")
         self.vars_entry = tk.Entry(
             self.top_frame, width=5, font="Courier", text=self.var2
         )
@@ -453,20 +462,33 @@ class MainWindow:
 
         self.bestx_output =[self.best_x0_output, self.best_x1_output, self.best_x2_output]
         # bottom frame
-        self.run_button = tk.Button(
+        self.maximize_button = tk.Button(
             self.bot_frame,
-            text="Εκτέλεση",
+            text="maximize",
             width=10,
-            font="none 14",
-            command=lambda: threading.Thread(target=self.run).start(),
+            font="Courier 14",
+            command=lambda: threading.Thread(target=self.maximize).start(),
+            relief='ridge'
         )
+
+        self.minimize_button = tk.Button(
+            self.bot_frame,
+            text="minimize",
+            width=10,
+            font="Courier 14",
+            command=lambda: threading.Thread(target=self.minimize).start(),
+            relief='ridge'
+        )
+
+        
 
         exit_button = tk.Button(
             self.bot_frame,
-            text="Έξοδος",
+            text="exit",
             width=10,
-            font="none 14",
+            font="Courier 14",
             command=self.root.destroy,
+            relief='ridge'
         )
         # canvas
         self.fig = plt.Figure(figsize=(7, 4), dpi=100, facecolor="#efebe9")
@@ -537,11 +559,12 @@ class MainWindow:
         self.option.grid(row=1, column=0,padx=(0,50) )
         self.option2.grid(row=1, column=0, sticky=tk.W)
         # function entry
-        self.function_entry.grid(row=3, column=0)
+        self.function.grid(row=3, column=0,)
         #bounds entry
         self.vars_entry.grid(row=1, column=0, padx=(100,0))
         # buttons
-        self.run_button.grid(row=2, column=0, sticky=tk.W)
+        self.maximize_button.grid(row=2, column=0, sticky=tk.W)
+        self.minimize_button.grid(row=2, column=1)
         exit_button.grid(row=2, column=2, sticky=tk.E)
         # radio buttons
         self.tourn_button.grid(row=5, column=2)
@@ -554,9 +577,10 @@ class MainWindow:
         self.pm_slider.set(0.01)
         self.pc_slider.set(0.8)
         self.bits_slider.set(30)
-        self.function_entry.insert(END, "x[0]**2 + x[1]**2 + x[2]**3 + x[0]*x[1]*x[2]")
         self.v.set(1)
         self.var.set(list(self.choices.keys())[0])
+        self.function.current()
+        
         """traced var"""
         self.var.trace("w", self.bounds_f)
         """mainloop"""
@@ -570,12 +594,14 @@ class MainWindow:
         t = [f"x[{i}]" for i in range(n)]
         self.choices = dict(zip(t,["0,10"]*n))
         for val in self.choices.keys():
-      
             menu.add_command(label=val, command=tk._setit(self.var,val))
-        self.function_entry.delete(0,END)
+        self.function_entry.set("")
         self.var.set(list(self.choices.keys())[0])
-        
-        
+    
+    def setfunc(self,event):
+        self.function = event.widget.get()
+        self.function_entry.set(self.func_dict[self.function])
+    
         
 
     def bind_func(self, event):
@@ -635,21 +661,28 @@ class MainWindow:
         self.axes.xaxis.set_major_locator(MaxNLocator(integer=True))
         self.canvas.draw()
 
+    def minimize(self):
+        self.objective_function = f"-1*({self.function_entry.get()})"
+        self.run()
+    
+    def maximize(self):
+        self.objective_function = self.function_entry.get()
+        self.run()
     def dreamcatcher(self):
         """tries to catch exceptions a man can only dream of"""
         try:
-            objective_function = self.function_entry.get()
+            
             self.bounds = self.extract_bounds(self.choices)
             
-            if not any(k in objective_function for k in list(self.choices.keys())):
+            if not any(k in self.objective_function for k in list(self.choices.keys())):
                 raise Exception("Καμία μεταβλητή")
             for key in self.choices.keys():
-                if self.choices[key] == "" and key in objective_function:
+                if self.choices[key] == "" and key in self.objective_function:
                     raise Exception(
                         "Ασυμφωνία μεταβλητών συνάρτησης με μεταβλητές Π.Ο."
                     )
             for key in self.choices.keys():
-                if self.choices[key] != "" and key not in objective_function:
+                if self.choices[key] != "" and key not in self.objective_function:
                     raise Exception(
                         "Ασυμφωνία μεταβλητών συνάρτησης με μεταβλητές Π.Ο."
                     )
@@ -663,7 +696,7 @@ class MainWindow:
                 self.pm_slider.get(),
                 self.pc_slider.get(),
                 self.cp_slider.get(),
-                eval("lambda *x:" + objective_function),
+                eval("lambda *x:" + self.objective_function),
             )
             return ga
         except Exception as e:
