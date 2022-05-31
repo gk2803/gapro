@@ -1,5 +1,6 @@
 from operator import attrgetter
 import random
+import numpy.random as npr 
 
 
 class Chromosome:
@@ -13,22 +14,19 @@ class Chromosome:
         self.bounds = bounds
         self.genes = genes
         self.bits = bits 
-        self.prob = 0
-        self.qprob = 0
-
         self.real_genes = self.decode(self.genes)
-        
         self.fitness = objective_function(*self.real_genes)
         self.scaled_fitness = self.fitness 
     
     
     @classmethod
     def rand(cls, bounds,objective_function,bits):
-        '''creates random chromosome'''
+        '''alternative constructor ->random chromosome'''
         genes = [[str(random.randint(0,1)) for i in range(bits)] for _ in range(len(bounds))]
         return cls(genes,bounds,objective_function,bits)
 
     def decode(self, genes):
+        ''' list of binaries -> list of real numbers'''
         real_chromosome = []
         for i in range(len(self.bounds)):
             integer = int("".join(char for char in genes[i]), 2)
@@ -43,7 +41,7 @@ class Chromosome:
   
 
 class GeneticAlgorithm:
-    def __init__(self, size, bits, bounds, pm, pc, cp, objective_function):
+    def __init__(self, size:int, bits:int, bounds:list, pm:float, pc:float, cp:int, objective_function:callable,):
         self.objective_function = objective_function
         self.size = size
         self.bits = bits
@@ -51,7 +49,6 @@ class GeneticAlgorithm:
         self.pm = pm
         self.pc = pc
         self.cp = cp
-        self.flag = False 
         self.population = [Chromosome.rand(self.bounds,objective_function,self.bits) for _ in range(size)]
             
         
@@ -61,41 +58,27 @@ class GeneticAlgorithm:
         '''prepares class for selection'''
         self.fitness_sum = sum([chrome.fitness for chrome in self.population])
         self.fitness_average = self.fitness_sum / len(self.population)
-        for chrome in self.population:
-            if chrome.fitness<=0:
-                self.flag = True
-                break
         
-        
-        
+  
     def roulette_selection(self):
         '''Fitness proportionate selection'''
-        #scaling if negative fitness
-        self.qprob = 0
+        self.flag = any(c.fitness<=0 for c in self.population)
         if self.flag:
             min_fitness = min(self.population, key=attrgetter("fitness")).fitness
             
             for chrome in self.population:
                 chrome.scaled_fitness -= (min_fitness -10) #fitness can't be zero
             self.scaled_sum = sum([chrome.scaled_fitness for chrome in self.population])
-            for chromosome in self.population:
-                chromosome.prob = chromosome.scaled_fitness / self.scaled_sum
-                self.qprob += chromosome.prob
-                chromosome.qprob += self.qprob
-            self.flag = False 
-        else:
-            for chromosome in self.population:
-                chromosome.prob = chromosome.fitness / self.fitness_sum
-                self.qprob += chromosome.prob
-                chromosome.qprob += self.qprob
+            
         t = []
+        selection_probs = [c.fitness/self.fitness_sum for c in self.population] if not self.flag else [c.scaled_fitness/self.scaled_sum for c in self.population]
         for _ in range(self.size):
-            r = random.random()
-            for chromosome in self.population:
-                if r <= chromosome.qprob:
-                    t.append(chromosome)
-                    break
-        self.population = t
+            t.extend(random.choices(self.population,weights=selection_probs))
+        self.population = t 
+        self.flag = False
+
+
+
 
     def tournament_selection(self):
         '''tournament based selection'''
@@ -199,6 +182,16 @@ class GeneticAlgorithm:
         self.mutation()
 
     
-
-
-
+#ga = GeneticAlgorithm(10,10,[[0,10],[0,10]],0.1,1,1,lambda *x: x[0] + x[1])
+#
+#
+#for c in ga.population:
+#    print(c.real_genes)
+#
+#ga.misc()
+#ga.roulette_selection()
+#print(ga)
+#for c in ga.population:
+#    print(c.real_genes)
+#
+#

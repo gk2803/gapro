@@ -164,7 +164,7 @@ class MainWindow:
             self.top_frame,
             from_=0,
             to=1,
-            resolution=0.01,
+            resolution=0.001,
             orient="horizontal",
             bg=self.color,
         )
