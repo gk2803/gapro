@@ -202,8 +202,8 @@ class MainWindow:
         self.var2 = tk.StringVar() #entry
         self.var_number = tk.IntVar() #number of variables
         self.choices = {
-            "x[0]": "-10,10",
-            "x[1]": "-10,10",
+            "x": "-10,10",
+            "y": "-10,10",
             
         }
         self.option = tk.OptionMenu(self.top_frame, self.var, *self.choices)
@@ -213,11 +213,11 @@ class MainWindow:
         # function
         self.function_entry = tk.StringVar()
         self.function = ttk.Combobox(self.top_frame, textvariable=self.function_entry,width=35,height=10)
-        self.func_dict = {'Beale function':'(1.5-x[0]+x[0]*x[1])**2+(2.25-x[0]+x[0]*x[1]**2)**2+(2.625-x[0]+x[0]*x[1]**3)**2',
-        'Booth function':'(x[0]+2*x[1]-7)**2 +(2*x[0] +x[1] -5)**2',
-        'Matyas function':'0.26*(x[0]**2+x[1]**2)-0.48*x[0]*x[1]',
-        'Himmelblau\'s function':'(x[0]**2+x[1]-11)**2 + (x[0]+x[1]**2-7)**2',
-        'Three-hump camel function':'2*x[0]**2-1.05*x[0]**4+x[0]**6/6+x[0]*x[1]+x[1]**2'}
+        self.func_dict = {'Beale function':'(1.5-x+x*y)**2+(2.25-x+x*y**2)**2+(2.625-x+x*y**3)**2',
+        'Booth function':'(x+2*y-7)**2 +(2*x +y -5)**2',
+        'Matyas function':'0.26*(x**2+y**2)-0.48*x*y',
+        'Himmelblau\'s function':'(x**2+y-11)**2 + (x+y**2-7)**2',
+        'Three-hump camel function':'2*x**2-1.05*x**4+x**6/6+x*y+y**2'}
         #adding combobox drop down list 
         self.function['values']=list(self.func_dict.keys())
         self.function.bind("<<ComboboxSelected>>",self.setfunc)
@@ -304,7 +304,7 @@ class MainWindow:
         )
         x0 = tk.Label(
             self.inner_frame,
-            text="x[0]",
+            text="x",
             fg="black",
             font="Courier",
             bg="#C0C0C0",
@@ -313,7 +313,7 @@ class MainWindow:
         )
         x1 = tk.Label(
             self.inner_frame,
-            text="x[1]",
+            text="y",
             fg="black",
             font="Courier",
             bg="#C0C0C0",
@@ -322,7 +322,7 @@ class MainWindow:
         )
         x2 = tk.Label(
             self.inner_frame,
-            text="     x[2]     ",
+            text="       z        ",
             fg="black",
             font="Courier",
             bg="#C0C0C0",
@@ -526,7 +526,7 @@ class MainWindow:
         gener_label2.grid(row=3, column=1)
         x0.grid(row=3, column=2, sticky="nsew")
         x1.grid(row=3, column=3, columnspan=2, sticky="nsew")
-        x2.grid(row=3, column=5,sticky='nsew')
+        x2.grid(row=3, column=5,sticky='nsew',columnspan=3)
 
         cur_label2.grid(row=4, column=0)
         bestest_label2.grid(row=5, column=0)
@@ -591,7 +591,9 @@ class MainWindow:
         menu = self.option.children["menu"]
         menu.delete(0,"end")        
         n = self.var_number.get()
-        t = [f"x[{i}]" for i in range(n)]
+        t=['x','y','z']
+        t=[t[i] for i in range(n)]
+        
         self.choices = dict(zip(t,["0,10"]*n))
         for val in self.choices.keys():
             menu.add_command(label=val, command=tk._setit(self.var,val))
@@ -696,7 +698,7 @@ class MainWindow:
                 self.pm_slider.get(),
                 self.pc_slider.get(),
                 self.cp_slider.get(),
-                eval("lambda *x:" + self.objective_function),
+                eval("lambda x=0,y=0,z=0:" + self.objective_function),
             )
             return ga
         except Exception as e:
