@@ -181,17 +181,4 @@ class GeneticAlgorithm:
         self.crossover()
         self.mutation()
 
-    
-#ga = GeneticAlgorithm(10,10,[[0,10],[0,10]],0.1,1,1,lambda *x: x[0] + x[1])
-#
-#
-#for c in ga.population:
-#    print(c.real_genes)
-#
-#ga.misc()
-#ga.roulette_selection()
-#print(ga)
-#for c in ga.population:
-#    print(c.real_genes)
-#
-#
+
