@@ -217,11 +217,14 @@ class MainWindow:
         # function
         self.function_entry = tk.StringVar()
         self.function = ttk.Combobox(self.top_frame, textvariable=self.function_entry,width=35,height=10)
-        self.func_dict = {'Beale function':'(1.5-x+x*y)**2+(2.25-x+x*y**2)**2+(2.625-x+x*y**3)**2',
-        'Booth function':'(x+2*y-7)**2 +(2*x +y -5)**2',
-        'Matyas function':'0.26*(x**2+y**2)-0.48*x*y',
-        'Himmelblau\'s function':'(x**2+y-11)**2 + (x+y**2-7)**2',
-        'Three-hump camel function':'2*x**2-1.05*x**4+x**6/6+x*y+y**2'}
+        self.func_dict = {
+                        'Beale function':'(1.5-x+x*y)**2+(2.25-x+x*y**2)**2+(2.625-x+x*y**3)**2',
+                        'Booth function':'(x+2*y-7)**2 +(2*x +y -5)**2',
+                        'Matyas function':'0.26*(x**2+y**2)-0.48*x*y',
+                        'Himmelblau\'s function':'(x**2+y-11)**2 + (x+y**2-7)**2',
+                        'Three-hump camel function':'2*x**2-1.05*x**4+x**6/6+x*y+y**2',
+                        'project function':'x**2 + y**3 + z**4 + x*y*z'}
+                        
         #adding combobox drop down list 
         self.function['values']=list(self.func_dict.keys())
         self.function.bind("<<ComboboxSelected>>",self.setfunc)
@@ -229,7 +232,7 @@ class MainWindow:
         self.var2 = tk.StringVar()
         self.var2.set("-10,10")
         self.vars_entry = tk.Entry(
-            self.top_frame, width=5, font="Courier", text=self.var2
+            self.top_frame, width=10, font="Courier", text=self.var2, justify='center'
         )
         self.vars_entry.bind("<Return>", self.bind_func)
         # radio buttons
@@ -563,7 +566,7 @@ class MainWindow:
         # function entry
         self.function.grid(row=3, column=0,)                    # συνάρτηση
         #bounds entry
-        self.vars_entry.grid(row=1, column=0, padx=(100,0))     # Πεδία ορισμού - Είσοδος πεδίων όρισμού
+        self.vars_entry.grid(row=1, column=0, padx=(110,0))     # Πεδία ορισμού - Είσοδος πεδίων όρισμού
         # buttons
         self.maximize_button.grid(row=2, column=0, sticky=tk.W) # maximize
         self.minimize_button.grid(row=2, column=1)              # minimize
@@ -587,7 +590,9 @@ class MainWindow:
         self.var.trace("w", self.bounds_f)
         """mainloop"""
         self.root.mainloop()
-    
+
+
+#
     def set_vars(self,event):
         
         menu = self.option.children["menu"]
@@ -632,8 +637,9 @@ class MainWindow:
         """returns true if entry is two comma separated integers (bounds) or empty string else false"""
         try:
             x, y = s.split(",")
-            int(x)
-            int(y)
+            if int(x) >= int(y):
+                raise ValueError
+            
             return True
         except ValueError:
             return False
@@ -723,8 +729,8 @@ class MainWindow:
             ga.run(self.v.get())
             b = [ga.best().fitness]
             a = [ga.fitness_average]
-            best = b[0]
-            best_index = 1
+            self.best = b[0]
+            self.best_index = 1
 
             for i in range(1, self.generations):
 
@@ -737,13 +743,13 @@ class MainWindow:
                 a.append(ga.fitness_average)
                 self.avg_output.configure(text=float("{:.2f}".format(a[i])))
 
-                if best < ga.best().fitness:
-                    best = ga.best().fitness
-                    best_index = i + 1
-                    self.best_sol_output.configure(text=float("{:.2f}".format(best)))
-                    self.best_gen_output.configure(text=best_index)
+                if self.best < ga.best().fitness:
+                    self.best = ga.best().fitness
+                    self.best_index = i + 1
+                    self.best_sol_output.configure(text=float("{:.2f}".format(self.best)))
+                    self.best_gen_output.configure(text=self.best_index)
 
-                    self.best_gener2_output.configure(text=best_index)
+                    self.best_gener2_output.configure(text=self.best_index)
                     self.run_helper(len(self.bounds), ga, self.bestx_output)
             self.graph(a, b)
         self.fig.clear()

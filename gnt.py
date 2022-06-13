@@ -5,11 +5,7 @@ import numpy.random as npr
 
 class Chromosome:
     def __init__(
-        self,
-        genes: list,
-        bounds: list,
-        objective_function: callable,
-        bits: int 
+        self, genes: list, bounds: list, objective_function: callable, bits: int 
     ):
         self.bounds = bounds
         self.genes = genes
@@ -17,16 +13,19 @@ class Chromosome:
         self.real_genes = self.decode(self.genes)
         self.fitness = objective_function(*self.real_genes)
         self.scaled_fitness = self.fitness 
-    
-    
+        
     @classmethod
     def rand(cls, bounds,objective_function,bits):
-        '''alternative constructor ->random chromosome'''
+        '''
+        alternative constructor ->random chromosome
+        '''
         genes = [[str(random.randint(0,1)) for i in range(bits)] for _ in range(len(bounds))]
         return cls(genes,bounds,objective_function,bits)
 
     def decode(self, genes):
-        ''' list of binaries -> list of real numbers'''
+        '''
+         list of binaries -> list of real numbers
+         '''
         real_chromosome = []
         for i in range(len(self.bounds)):
             integer = int("".join(char for char in genes[i]), 2)
@@ -37,8 +36,7 @@ class Chromosome:
             )
             real_chromosome.append(real_value)
         return real_chromosome
-    
-  
+      
 
 class GeneticAlgorithm:
     def __init__(self, size:int, bits:int, bounds:list, pm:float, pc:float, cp:int, objective_function:callable,):
@@ -55,13 +53,18 @@ class GeneticAlgorithm:
 
     # calculates fitness scores/qprob
     def misc(self):
-        '''prepares class for selection'''
+        '''
+        prepares class for selection
+        '''
         self.fitness_sum = sum([chrome.fitness for chrome in self.population])
         self.fitness_average = self.fitness_sum / len(self.population)
         
   
     def roulette_selection(self):
-        '''Fitness proportionate selection'''
+        '''
+        Fitness proportionate selection
+        '''
+        #scale if negative value
         self.flag = any(c.fitness<=0 for c in self.population)
         if self.flag:
             min_fitness = min(self.population, key=attrgetter("fitness")).fitness
@@ -81,7 +84,9 @@ class GeneticAlgorithm:
 
 
     def tournament_selection(self):
-        '''tournament based selection'''
+        '''
+        tournament based selection
+        '''
         self.population =  [max(random.sample(self.population,2), key=attrgetter("fitness")) for _ in range(self.size)]
 
     def crossover(self):
