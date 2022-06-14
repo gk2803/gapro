@@ -202,20 +202,24 @@ class MainWindow:
 ##################################   DROPDOWN   ###################################################################
 ###################################################################################################################
         # top frame - dropdowns
-        self.var = tk.StringVar(self.top_frame) #bounds 
-        self.var2 = tk.StringVar() #entry
-        self.var_number = tk.IntVar() #number of variables
+        self.bounds_var = tk.StringVar(self.top_frame) #μεταβλητή δευτέρου dropdown-menu, (x,y,z)
+        self.bounds_input = tk.StringVar() #εισαχθέντα από τον χρήστη πεδία ορισμού
+        self.var_number = tk.IntVar() #αριθμός μεταβλητών - πρώτο dropdown-menu
+        self.function_entry = tk.StringVar() #είσοδος συνάρτησης
+        self.radio_var = tk.IntVar() #μεταβλητή τελεστή επιλογής 
+        
         self.choices = {
-            "x": "-10,10",
-            "y": "-10,10",
+            "x": "0,10",
+            "y": "0,20",
+            "z": "0,30"
             
         }
-        self.option = tk.OptionMenu(self.top_frame, self.var, *self.choices)
-        self.var_number = tk.IntVar()
-        self.var_number.set(2)
+        self.option = tk.OptionMenu(self.top_frame, self.bounds_var, *self.choices)
+        
+        
         self.option2 = tk.OptionMenu(self.top_frame, self.var_number, *[*range(1,4)],command=self.set_vars )
         # function
-        self.function_entry = tk.StringVar()
+        
         self.function = ttk.Combobox(self.top_frame, textvariable=self.function_entry,width=35,height=10)
         self.func_dict = {
                         'Beale function':'(1.5-x+x*y)**2+(2.25-x+x*y**2)**2+(2.625-x+x*y**3)**2',
@@ -223,29 +227,30 @@ class MainWindow:
                         'Matyas function':'0.26*(x**2+y**2)-0.48*x*y',
                         'Himmelblau\'s function':'(x**2+y-11)**2 + (x+y**2-7)**2',
                         'Three-hump camel function':'2*x**2-1.05*x**4+x**6/6+x*y+y**2',
-                        'project function':'x**2 + y**3 + z**4 + x*y*z'}
+                        'project function':'x**2 + y**3 + z**4 + x*y*z'
+                        }
                         
         #adding combobox drop down list 
         self.function['values']=list(self.func_dict.keys())
-        self.function.bind("<<ComboboxSelected>>",self.setfunc)
+        self.function.bind("<<ComboboxSelected>>",self.boxcallbackFunc)
         # bounds
-        self.var2 = tk.StringVar()
-        self.var2.set("-10,10")
+        
+        
         self.vars_entry = tk.Entry(
-            self.top_frame, width=10, font="Courier", text=self.var2, justify='center'
+            self.top_frame, width=10, font="Courier", text=self.bounds_input, justify='center'
         )
         self.vars_entry.bind("<Return>", self.bind_func)
         # radio buttons
-        self.v = tk.IntVar()
+        
         self.tourn_button = tk.Radiobutton(
-            self.top_frame, bg=self.color, text="Tournament", variable=self.v, value=1
+            self.top_frame, bg=self.color, text="Tournament", variable=self.radio_var, value=1
         )
 
         self.roulette_button = tk.Radiobutton(
             self.top_frame,
             bg=self.color,
             text="Roulette wheel",
-            variable=self.v,
+            variable=self.radio_var,
             value=2,
         )
 
@@ -509,7 +514,8 @@ class MainWindow:
         self.inner_frame.grid(row=7, columnspan=5, sticky="nsew") 
         self.top_frame.grid(row=0)
         self.bot_frame.grid(row=1)  
-
+        
+        self.inner_frame.columnconfigure(2, weight=3)
         # top frame
         variables_label.grid(row=0, column=0, sticky="nsew")    # dropdown αριθμός μεταβλητών
         generations_label.grid(row=4, column=0, sticky="nsew")  # Γενιές label
@@ -527,7 +533,7 @@ class MainWindow:
 
         gener_label.grid(row=0, column=1)                       # Γενιά label   (πρώτο μπλοκ)
         best_label.grid(row=0, column=2)                        # Best Fitness  label
-        average_label.grid(row=0, column=3, columnspan=1, sticky=tk.E) # Average fitness label
+        average_label.grid(row=0, column=3, columnspan=2, sticky="nsew") # Average fitness label
 
         gener_label2.grid(row=3, column=1)                      # Γενιά label   (δεύτερο μπλοκ)
         x0.grid(row=3, column=2, sticky="nsew")                 # x label       (δεύτερο μπλοκ)
@@ -576,56 +582,70 @@ class MainWindow:
         self.roulette_button.grid(row=6, column=2)              # radio - roulette wheel
         # canvas
         self.canvas.get_tk_widget().grid(row=0, column=0, columnspan=3) # graph
-        """initialize values"""
+        """αρχικοποίηση τιμών"""
         self.pop_slider.set(100)
         self.generation_slider.set(150)
         self.pm_slider.set(0.01)
         self.pc_slider.set(0.8)
         self.bits_slider.set(30)
-        self.v.set(1)
-        self.var.set(list(self.choices.keys())[0])
-        self.function.current()
-        
+        self.var_number.set(3)
+        self.bounds_input.set("0,10")        
+        self.radio_var.set(1)        
+        self.bounds_var.set(list(self.choices.keys())[0])
+        self.function.set("x**2 + y**3 + z**4 + x*y*z")
         """traced var"""
-        self.var.trace("w", self.bounds_f)
+        self.bounds_var.trace("w", self.bounds_f)
         """mainloop"""
         self.root.mainloop()
 
 
 #
     def set_vars(self,event):
-        
+        """
+        καθορίζει τον αριθμό των μεταβλητών, 
+        ενημερώνει ανάλογα το dropdown menu των μεταβλητών x-y-z
+        """
         menu = self.option.children["menu"]
         menu.delete(0,"end")        
         n = self.var_number.get()
         t=['x','y','z']
         t=[t[i] for i in range(n)]
-        
-        self.choices = dict(zip(t,["0,10"]*n))
+
+        #initializes bounds 
+        self.choices = dict(zip(t,["-10,10"]*n))
+
+        #creates the second drop down menu
         for val in self.choices.keys():
-            menu.add_command(label=val, command=tk._setit(self.var,val))
-        self.function_entry.set("")
-        self.var.set(list(self.choices.keys())[0])
+            menu.add_command(label=val, command=tk._setit(self.bounds_var,val))
+       
+        self.bounds_var.set(list(self.choices.keys())[0])
     
-    def setfunc(self,event):
+    def boxcallbackFunc(self,event):
+        """
+        τοποθετεί σαν input το value του λεξικού έτοιμων συναρτήσεων
+        https://www.etutorialspoint.com/index.php/347-python-tkinter-ttk-combobox-event-binding
+        """
         self.function = event.widget.get()
         self.function_entry.set(self.func_dict[self.function])
     
         
 
     def bind_func(self, event):
-        """"""
+        """
+        στο <enter> εμφανίζει κατάλληλο μήνυμα για αποδοχή ή όχι των πεδίων ορισμού,
+        παράλληλα ενημερώνει το λεξικό self.choices με τα αποδεκτά πεδία ορισμού
+        """
         if not self.mk_int(self.vars_entry.get()):
             self.bounds_label.config(text="❌", font="Courier", fg="red")
 
         else:
             self.bounds_label.config(text="✓", font="Courier", fg="green")
-            self.choices[self.var.get()] = self.vars_entry.get()
+            self.choices[self.bounds_var.get()] = self.vars_entry.get()
 
     def bounds_f(self, *args):
         """trace var method"""
-        var2_ = self.choices[self.var.get()]
-        self.var2.set(var2_)
+        var2_ = self.choices[self.bounds_var.get()]
+        self.bounds_input.set(var2_)
         self.bounds_label.config(text="")
 
     def update_scale(self, new_max):
@@ -634,7 +654,7 @@ class MainWindow:
 
     @staticmethod
     def mk_int(s):
-        """returns true if entry is two comma separated integers (bounds) or empty string else false"""
+        """επιστρέφει True αν τα πεδία ορισμού είναι αποδεκτά, διαφορετικά False"""
         try:
             x, y = s.split(",")
             if int(x) >= int(y):
@@ -645,7 +665,9 @@ class MainWindow:
             return False
 
     def extract_bounds(self, dict) -> list:
-        """takes a dictionary of strings, returns a list of integers"""
+        """
+        επιστρέφει τα πεδία ορισμού σε μορφή λίστας
+        """
         return [list(map(int, dict[val].split(","))) for val in dict if dict[val] != ""]
 
     def graph(self, y1, y2):
@@ -726,7 +748,7 @@ class MainWindow:
 
         ga = self.dreamcatcher()
         if ga:
-            ga.run(self.v.get())
+            ga.run(self.radio_var.get())
             b = [ga.best().fitness]
             a = [ga.fitness_average]
             self.best = b[0]
@@ -737,7 +759,7 @@ class MainWindow:
                 self.run_helper(len(self.bounds),ga,self.x_outputs)
                 self.gener_output.configure(text=i + 1)
                 self.gener2_output.configure(text=i + 1)
-                ga.run(self.v.get())
+                ga.run(self.radio_var.get())
                 b.append(ga.best().fitness)
                 self.best_output.configure(text=float("{:.2f}".format(b[i])))
                 a.append(ga.fitness_average)
