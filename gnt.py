@@ -1,6 +1,6 @@
 from operator import attrgetter
 import random
-import numpy.random as npr 
+
 
 
 class Chromosome:

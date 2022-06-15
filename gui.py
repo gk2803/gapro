@@ -741,13 +741,23 @@ class MainWindow:
     def run_helper(self,n,ga,output):
         for i in range(n):
             output[i].configure(text='{:.2f}'.format(ga.best().real_genes[i]))
-        
+    
+    def clear_outputs(self):
+        """καθαριζει τα πεδια εξοδου"""
+        self.gener_output.configure(text="")
+        self.x0_output.configure(text="")
+        self.x1_output.configure(text="")
+        self.x2_output.configure(text="")
+        self.best_x0_output.configure(text="")
+        self.best_x1_output.configure(text="")
+        self.best_x2_output.configure(text="")
 
     def run(self):
         """run buttom"""
 
         ga = self.dreamcatcher()
         if ga:
+            self.clear_outputs()
             ga.run(self.radio_var.get())
             b = [ga.best().fitness]
             a = [ga.fitness_average]
@@ -755,7 +765,7 @@ class MainWindow:
             self.best_index = 1
 
             for i in range(1, self.generations):
-
+                
                 self.run_helper(len(self.bounds),ga,self.x_outputs)
                 self.gener_output.configure(text=i + 1)
                 self.gener2_output.configure(text=i + 1)
