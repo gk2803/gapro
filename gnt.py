@@ -1,3 +1,4 @@
+from cgi import test
 from operator import attrgetter
 import random
 
@@ -186,4 +187,4 @@ class GeneticAlgorithm:
         self.crossover()
         self.mutation()
 
-
+test
