@@ -309,7 +309,7 @@ class MainWindow:
 
         average_label = tk.Label(                          # Average fitness
             self.inner_frame,
-            text="Average Fitness",
+            text="   Average Fitness   ",
             fg="black",
             font="Courier",
             bg="#C0C0C0",
@@ -328,7 +328,7 @@ class MainWindow:
         )
         x0 = tk.Label(                                     # x
             self.inner_frame_2,
-            text="       x        ",
+            text="      x      ",
             fg="black",
             font="Courier",
             bg="#C0C0C0",
@@ -337,16 +337,16 @@ class MainWindow:
         )
         x1 = tk.Label(                                     # y
             self.inner_frame_2,
-            text="       y        ",
+            text="      y      ",
             fg="black",
-            font="Courier",
+            font="Courier", 
             bg="#C0C0C0",
             relief="raised",
             borderwidth=2,
         )
         x2 = tk.Label(                                     # z
             self.inner_frame_2, 
-            text="       z        ",
+            text="      z       ",
             fg="black",
             font="Courier",
             bg="#C0C0C0",
@@ -522,7 +522,7 @@ class MainWindow:
         '''grids'''
         # frames
         self.inner_frame.grid(row=8, columnspan=5, sticky="nsew") 
-        self.inner_frame_2.grid(row=9,columnspan=5,sticky="nsew")
+        self.inner_frame_2.grid(row=11,columnspan=5,sticky="nsew")
         self.top_frame.grid(row=0)
         self.bot_frame.grid(row=1)  
         
@@ -543,20 +543,31 @@ class MainWindow:
         cur_label.grid(row=1, column=0)                         # Τρέχων label  (πρώτο μπλοκ)
         bestest_label.grid(row=2, column=0)                     # Best label    (πρώτο μπλοκ)
 
-        gener_label.grid(row=0, column=1, sticky="e")           # Γενιά label   (πρώτο μπλοκ)
+
+
+        gener_label.grid(row=0, column=1, sticky="nsew")           # Γενιά label   (πρώτο μπλοκ)
         best_label.grid(row=0, column=2, sticky="nsew")         # Best Fitness  label
-        average_label.grid(row=0, column=3, sticky="e")         # Average fitness label
+        average_label.grid(row=0, column=3, sticky="nsew")         # Average fitness label
 
         #inner_2#
 
-        cur_label2.grid(row=4, column=0)                        # Τρέχων label  (δεύτερο μπλοκ)
-        bestest_label2.grid(row=5, column=0)                    # Best label    (δεύτερο μπλοκ)
+        cur_label2.grid(row=1, column=0)                        # Τρέχων label  (δεύτερο μπλοκ)
+        bestest_label2.grid(row=2, column=0)                    # Best label    (δεύτερο μπλοκ)
 
-        gener_label2.grid(row=3, column=1)                      # Γενιά label   (δεύτερο μπλοκ)
-        x0.grid(row=3, column=2, sticky="nsew")                 # x label       (δεύτερο μπλοκ)
-        x1.grid(row=3, column=3, sticky="nsew")                 # y label       (δεύτερο μπλοκ)
-        x2.grid(row=3, column=5,sticky='nsew',columnspan=3)     # z label       (δεύτερο μπλοκ)
- 
+        gener_label2.grid(row=0, column=1, )                      # Γενιά label   (δεύτερο μπλοκ)
+        x0.grid(row=0, column=2,)                 # x label       (δεύτερο μπλοκ)
+        x1.grid(row=0, column=3,)                 # y label       (δεύτερο μπλοκ)
+        x2.grid(row=0, column=4,)                  # z label       (δεύτερο μπλοκ)
+
+        self.best_gener2_output.grid(row=2, column=1, )           # Best - Γενιά, output (δεύτερο μπλοκ)
+        self.best_x0_output.grid(row=2, column=2, )               # Best - X, output (δεύτερο μπλοκ)
+        self.best_x1_output.grid(row=2, column=3, )               # Best - Y, output (δεύτερο μπλοκ)
+        self.best_x2_output.grid(row=2, column=4, )               # Best - Z, output (δεύτερο μπλοκ)
+
+        self.gener2_output.grid(row=1, column=1, )                # Τρέχων - Γενιά, output (δεύτερο μπλοκ)
+        self.x0_output.grid(row=1, column=2,)                    # Τρέχων - X output (δεύτερο μπλοκ)
+        self.x1_output.grid(row=1, column=3,)                    # Τρέχων - Y output (δεύτερο μπλοκ)
+        self.x2_output.grid(row=1, column=4,)                    # Τρέχων - Z output (δεύτερο μπλοκ)
         
         # outputs
         self.gener_output.grid(row=1, column=1)                 # Τρέχων - γενιά, output           (πρώτο μπλοκ)
@@ -565,15 +576,9 @@ class MainWindow:
         self.best_gen_output.grid(row=2, column=1)              # Best -Γενιά, output              (πρώτο μπλοκ)
         self.best_sol_output.grid(row=2, column=2)              # Best - Best Fitness, output      (πρώτο μπλοκ)
 
-        self.gener2_output.grid(row=4, column=1)                # Τρέχων - Γενιά, output (δεύτερο μπλοκ)
-        self.x0_output.grid(row=4, column=2)                    # Τρέχων - X output (δεύτερο μπλοκ)
-        self.x1_output.grid(row=4, column=3)                    # Τρέχων - Y output (δεύτερο μπλοκ)
-        self.x2_output.grid(row=4, column=5)                    # Τρέχων - Z output (δεύτερο μπλοκ)
 
-        self.best_gener2_output.grid(row=5, column=1)           # Best - Γενιά, output (δεύτερο μπλοκ)
-        self.best_x0_output.grid(row=5, column=2)               # Best - X, output (δεύτερο μπλοκ)
-        self.best_x1_output.grid(row=5, column=3)               # Best - Y, output (δεύτερο μπλοκ)
-        self.best_x2_output.grid(row=5, column=5)               # Best - Z, output (δεύτερο μπλοκ)
+
+
         # sliders
         
         self.pop_slider.grid(row=1, column=1,sticky='nsew')     # πληθυσμός
