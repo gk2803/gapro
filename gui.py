@@ -15,7 +15,7 @@ class MainWindow:
         self.color = color
         self.root = root
         self.root.resizable(0, 0)
-        self.root.geometry("705x860")
+        self.root.geometry("705x890")
         self.root.title("Γενετικοί")
         # self.root.columnconfigure(0,weight=1)
         # self.root.rowconfigure(8, weight=1)
@@ -516,6 +516,15 @@ class MainWindow:
             master=self.bot_frame,
         )
         self.axes = self.fig.add_subplot(111)
+
+
+        self.error_handling = tk.Label(                    #Error Handler
+            self.bot_frame,
+            text="",
+            fg="black",
+            font="Courier",
+            bg=self.color,
+        )
 ############################################################################################################
 ######################################   GRIDS  ############################################################
 ############################################################################################################
@@ -576,7 +585,8 @@ class MainWindow:
         self.best_gen_output.grid(row=2, column=1)              # Best -Γενιά, output              (πρώτο μπλοκ)
         self.best_sol_output.grid(row=2, column=2)              # Best - Best Fitness, output      (πρώτο μπλοκ)
 
-
+        #error 
+        self.error_handling.grid(row=5, columnspan=5, sticky='nsew')
 
 
         # sliders
@@ -640,6 +650,7 @@ class MainWindow:
             menu.add_command(label=val, command=tk._setit(self.bounds_var,val))
        
         self.bounds_var.set(list(self.choices.keys())[0])
+        print(self.choices)
     
     def boxcallbackFunc(self,event):
         """
@@ -731,17 +742,16 @@ class MainWindow:
             self.bounds = self.extract_bounds(self.choices)
             
             if not any(k in self.objective_function for k in list(self.choices.keys())):
-                raise Exception("Καμία μεταβλητή")
+                raise Exception("Καμία μεταβλητή")            
             for key in self.choices.keys():
-                if self.choices[key] == "" and key in self.objective_function:
+                if key not in self.objective_function:
                     raise Exception(
-                        "Ασυμφωνία μεταβλητών συνάρτησης με μεταβλητές Π.Ο."
+                        "Λάθος αριθμός μεταβλητών"
                     )
-            for key in self.choices.keys():
-                if self.choices[key] != "" and key not in self.objective_function:
-                    raise Exception(
-                        "Ασυμφωνία μεταβλητών συνάρτησης με μεταβλητές Π.Ο."
-                    )
+            for var in ['x','y','z']:
+                if var in self.objective_function and var not in list(self.choices.keys()):
+                    raise Exception("Λάθος αριθμός μεταβλητών")
+            
 
             self.generations = self.generation_slider.get()
 
@@ -756,7 +766,7 @@ class MainWindow:
             )
             return ga
         except Exception as e:
-            print(e)
+            self.error_handling.configure(text=f"{e}.")
             return
 
     def run_helper(self,n,ga,output):
@@ -765,6 +775,7 @@ class MainWindow:
     
     def clear_outputs(self):
         """καθαριζει τα πεδια εξοδου"""
+        self.error_handling.configure(text="")
         self.gener_output.configure(text="")
         self.x0_output.configure(text="")
         self.x1_output.configure(text="")
