@@ -187,4 +187,4 @@ class GeneticAlgorithm:
         self.crossover()
         self.mutation()
 
-test
+
