@@ -1,5 +1,4 @@
-# Εύρεση μεγίστου συνάρτησης με χρήση γενετικών αλγορίθμων
-
+# Genetic algorithm to calculate the maximum of a multivariate function
 ## Getting Started 
 Windows:
 
